@@ -65,6 +65,7 @@ endef
 #
 
 _product_var_list := \
+    PRODUCT_BOOTANIMATION \
     PRODUCT_NAME \
     PRODUCT_MODEL \
     PRODUCT_LOCALES \
