@@ -22,7 +22,6 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - aospremote: Add git remote for matching AOSP repository.
 - cafremote: Add git remote for matching CodeAurora repository.
 - mka:      Builds using SCHED_BATCH on all processors.
-- mkap:     Builds the module(s) using mka and pushes them to the device.
 - cmka:     Cleans and builds using mka.
 - repolastsync: Prints date and time of last repo sync.
 - reposync: Parallel repo sync using ionice and SCHED_BATCH.
@@ -497,10 +496,21 @@ function brunch()
     if [ $? -eq 0 ]; then
         mka bacon
     else
-        echo "No such item in brunch menu. Try 'breakfast'"
+echo "No such item in brunch menu. Try 'breakfast'"
         return 1
     fi
-    return $?
+return $?
+}
+
+function mka() {
+    case `uname -s` in
+        Darwin)
+            make -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
+            ;;
+        *)
+            schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+            ;;
+    esac
 }
 
 function breakfast()
@@ -510,33 +520,31 @@ function breakfast()
     OCT_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/cm/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/[a-z][a-z][a-z]/vendorsetup.sh 2> /dev/null`
         do
-            echo "including $f"
+echo "including $f"
             . $f
         done
-    unset f
+unset f
 
     if [ $# -eq 0 ]; then
         # No arguments, so let's have the full menu
         lunch
     else
-        echo "z$target" | grep -q "-"
+echo "z$target" | grep -q "-"
         if [ $? -eq 0 ]; then
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the CM model name
+            # This is probably just the OCT model name
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
             lunch oct_$target-userdebug
         fi
-    fi
-    return $?
+fi
+return $?
 }
-
-alias bib=breakfast
 
 function lunch()
 {
