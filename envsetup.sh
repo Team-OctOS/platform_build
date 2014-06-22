@@ -576,6 +576,7 @@ function brunch()
 function breakfast()
 {
     target=$1
+    local variant=$2
     TO_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
@@ -595,8 +596,11 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the TO model name
-            lunch to_$target-userdebug
+            # This is probably just the nexus model name
+            if [ -z "$variant" ]; then
+                variant="userdebug"
+            fi
+            lunch to_$target-$variant
         fi
     fi
     return $?
