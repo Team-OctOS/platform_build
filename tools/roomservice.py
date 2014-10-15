@@ -34,7 +34,7 @@ except ImportError:
 
 # Config
 # set this to the default remote to use in repo
-default_rem = "ok"
+default_rem = "gh"
 # set this to the default revision to use (branch/tag name)
 default_rev = "WIP" #Temp branch until merged
 # set this to the remote that you use for projects from your team repos
@@ -229,7 +229,7 @@ def create_dependency_manifest(dependencies):
 
         # not adding an organization should default to platform_team
         # only apply this to github
-        if remote == "github":
+        if remote == "gh":
             if not "/" in repository:
                 repository = '/'.join([platform_team, repository])
         project = create_manifest_project(repository,
