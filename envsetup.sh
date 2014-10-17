@@ -1940,7 +1940,13 @@ function mka() {
             ;;
         *)
 	    make installclean && rm -rf out/target/product/*/*md5sum
-            schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+	    if [[ OVERRIDE_THREADS ]] && [[ OVERRIDE_THREADS -ne "" ]]
+	      then
+	      echo "Overriding with $OVERRIDE_THREADS threads."
+	      schedtool -B -n 1 -e ionice -n 1 make -j$OVERRIDE_THREADS "$@"
+	    else
+              schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+	    fi
             ;;
     esac
 }
