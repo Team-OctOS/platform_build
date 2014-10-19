@@ -697,9 +697,9 @@ endif
 # Named '.dat' so we don't attempt to use imgdiff for patching it.
 RECOVERY_RESOURCE_ZIP := $(TARGET_OUT)/etc/recovery-resource.dat
 
-ifeq ($(recovery_resources_private),)
-  $(info No private recovery resources for TARGET_DEVICE $(TARGET_DEVICE))
-endif
+#ifeq ($(recovery_resources_private),)
+#  $(info No private recovery resources for TARGET_DEVICE $(TARGET_DEVICE))
+#endif
 
 ifeq ($(recovery_fstab),)
   $(info No recovery.fstab for TARGET_DEVICE $(TARGET_DEVICE))
@@ -1489,9 +1489,9 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 
 OCT_TARGET_PACKAGE := $(PRODUCT_OUT)/cm-$(OCT_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage oct
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-bacon: otapackage
+oct: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
 endif
