@@ -38,7 +38,7 @@ endef
 # filter out the duplicate <source file>:<dest file> pairs.
 unique_product_copy_files_pairs :=
 unique_product_copy_files_destinations :=
-unique_product_copy_files_pairs := \
+unique_product_copy_files_pairs :=
 $(foreach cf,$(PRODUCT_COPY_FILES), \
     $(if $(filter $(unique_product_copy_files_pairs),$(cf)),,\
         $(eval unique_product_copy_files_pairs += $(cf))))
