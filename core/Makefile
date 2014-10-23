@@ -37,6 +37,8 @@ $(if $(filter %.apk, $(1)),$(error \
 endef
 # filter out the duplicate <source file>:<dest file> pairs.
 unique_product_copy_files_pairs :=
+unique_product_copy_files_destinations :=
+unique_product_copy_files_pairs := \
 $(foreach cf,$(PRODUCT_COPY_FILES), \
     $(if $(filter $(unique_product_copy_files_pairs),$(cf)),,\
         $(eval unique_product_copy_files_pairs += $(cf))))
@@ -52,8 +54,6 @@ $(foreach cf,$(unique_product_copy_files_pairs), \
             $(eval $(call copy-one-file,$(_src),$(_fulldest)))) \
         $(eval ALL_DEFAULT_INSTALLED_MODULES += $(_fulldest)) \
         $(eval unique_product_copy_files_destinations += $(_dest))))
-unique_product_copy_files_pairs :=
-unique_product_copy_files_destinations :=
 
 # -----------------------------------------------------------------
 # docs/index.html
