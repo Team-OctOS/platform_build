@@ -16,12 +16,12 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - jgrep:   Greps on all local Java files.
 - resgrep: Greps on all local res/*.xml files.
 - godir:   Go to the directory containing a file.
-- cmremote: Add git remote for CM Gerrit Review.
-- cmgerrit: A Git wrapper that fetches/pushes patch from/to CM Gerrit Review.
-- cmrebase: Rebase a Gerrit change and push it again.
+- toremote: Add git remote for Team OctOS Gerrit Review.
+- torebase: Rebase a Gerrit change and push it again.
 - aospremote: Add git remote for matching AOSP repository.
 - cafremote: Add git remote for matching CodeAurora repository.
 - mka:      Builds using SCHED_BATCH on all processors.
+- mkap:     Builds the module(s) using mka and pushes them to the device.
 - cmka:     Cleans and builds using mka.
 - repolastsync: Prints date and time of last repo sync.
 - reposync: Parallel repo sync using ionice and SCHED_BATCH.
@@ -227,6 +227,9 @@ function set_stuff_for_environment()
     set_java_home
     setpaths
     set_sequence_number
+
+    # With this environment variable new GCC can apply colors to warnings/errors
+    export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 }
 
 function set_sequence_number()
@@ -454,12 +457,6 @@ function add_lunch_combo()
     LUNCH_MENU_CHOICES=(${LUNCH_MENU_CHOICES[@]} $new_combo)
 }
 
-# add the default one here
-add_lunch_combo aosp_arm-eng
-add_lunch_combo aosp_x86-eng
-add_lunch_combo aosp_mips-eng
-add_lunch_combo vbox_x86-eng
-
 function print_lunch_menu()
 {
     local uname=$(uname)
@@ -494,9 +491,9 @@ function brunch()
 {
     breakfast $*
     if [ $? -eq 0 ]; then
-        mka bacon
+        time mka oct
     else
-echo "No such item in brunch menu. Try 'breakfast'"
+        echo "No such item in brunch menu. Try 'breakfast'"
         return 1
     fi
 return $?
@@ -520,18 +517,18 @@ function breakfast()
     OCT_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/[a-z][a-z][a-z]/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/oct/vendorsetup.sh 2> /dev/null`
         do
-echo "including $f"
+            echo "including $f"
             . $f
         done
-unset f
+    unset f
 
     if [ $# -eq 0 ]; then
         # No arguments, so let's have the full menu
         lunch
     else
-echo "z$target" | grep -q "-"
+        echo "z$target" | grep -q "-"
         if [ $? -eq 0 ]; then
             # A buildtype was specified, assume a full device name
             lunch $target
@@ -540,11 +537,13 @@ echo "z$target" | grep -q "-"
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
-            lunch oct_$target-userdebug
+            lunch oct_$target-$variant
         fi
-fi
-return $?
+    fi
+    return $?
 }
+
+alias bib=breakfast
 
 function lunch()
 {
@@ -554,7 +553,7 @@ function lunch()
         answer=$1
     else
         print_lunch_menu
-        echo -n "Which would you like? [aosp_arm-eng] "
+        echo -n "Which would you like? [full-eng] "
         read answer
     fi
 
@@ -562,7 +561,7 @@ function lunch()
 
     if [ -z "$answer" ]
     then
-        selection=aosp_arm-eng
+        selection=full-eng
     elif (echo -n $answer | grep -q -e "^[0-9][0-9]*$")
     then
         if [ $answer -le ${#LUNCH_MENU_CHOICES[@]} ]
@@ -587,14 +586,17 @@ function lunch()
     check_product $product
     if [ $? -ne 0 ]
     then
-        # if we can't find a product, try to grab it off the CM github
+        # if we can't find the product, try to grab it from our github
         T=$(gettop)
         pushd $T > /dev/null
         build/tools/roomservice.py $product
         popd > /dev/null
         check_product $product
     else
+        T=$(gettop)
+        pushd $T > /dev/null
         build/tools/roomservice.py $product true
+        popd > /dev/null
     fi
     if [ $? -ne 0 ]
     then
@@ -688,7 +690,7 @@ function eat()
 {
     if [ "$OUT" ] ; then
         MODVERSION=$(get_build_var OCT_VERSION)
-        ZIPFILE=cm-$MODVERSION.zip
+        ZIPFILE=oct-$MODVERSION.zip
         ZIPPATH=$OUT/$ZIPFILE
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
@@ -1480,9 +1482,9 @@ function godir () {
     \cd $T/$pathname
 }
 
-function cmremote()
+function toremote()
 {
-    git remote rm cmremote 2> /dev/null
+    git remote rm toremote 2> /dev/null
     if [ ! -d .git ]
     then
         echo .git directory not found. Please run this from the root directory of the Android repository you wish to set up.
@@ -1497,14 +1499,56 @@ function cmremote()
           return 0
         fi
     fi
-    CMUSER=`git config --get review.review.cyanogenmod.org.username`
-    if [ -z "$CMUSER" ]
+    TOUSER=`git config --get review.review.teamoctos.com.username`
+    if [ -z "$CRUSER" ]
     then
-        git remote add cmremote ssh://review.cyanogenmod.org:29418/$GERRIT_REMOTE
+        git remote add toremote ssh://review.teamoctos.com:29418/$GERRIT_REMOTE
     else
-        git remote add cmremote ssh://$CMUSER@review.cyanogenmod.org:29418/$GERRIT_REMOTE
+        git remote add crremote ssh://$TOUSER@review.teamoctos.com:29418/$GERRIT_REMOTE
     fi
-    echo You can now push to "cmremote".
+    echo You can now push to "toremote".
+}
+export -f toremote
+
+function torebase() {
+    local repo=$1
+    local refs=$2
+    local pwd="$(pwd)"
+    local dir="$(gettop)/$repo"
+
+    if [ -z $repo ] || [ -z $refs ]; then
+        echo "Team OctOS Gerrit Rebase Usage: "
+        echo "      crrebase <path to project> <patch IDs on Gerrit>"
+        echo "      The patch IDs appear on the Gerrit commands that are offered."
+        echo "      They consist on a series of numbers and slashes, after the text"
+        echo "      refs/changes. For example, the ID in the following command is 26/8126/2"
+        echo ""
+        echo "      git[...]ges_apps_Camera refs/changes/26/8126/2 && git cherry-pick FETCH_HEAD"
+        echo ""
+        return
+    fi
+
+    if [ ! -d $dir ]; then
+        echo "Directory $dir doesn't exist in tree."
+        return
+    fi
+    cd $dir
+    repo=$(cat .git/config  | grep git://github.com | awk '{ print $NF }' | sed s#git://github.com/##g)
+    echo "Starting branch..."
+    repo start tmprebase .
+    echo "Bringing it up to date..."
+    repo sync .
+    echo "Fetching change..."
+    git fetch "http://review.carbonrom.org/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
+    if [ "$?" != "0" ]; then
+        echo "Error cherry-picking. Not uploading!"
+        return
+    fi
+    echo "Uploading..."
+    repo upload .
+    echo "Cleaning up..."
+    repo abandon tmprebase .
+    cd $pwd
 }
 
 function aospremote()
@@ -1630,309 +1674,6 @@ function installrecovery()
     fi
 }
 
-function makerecipe() {
-  if [ -z "$1" ]
-  then
-    echo "No branch name provided."
-    return 1
-  fi
-  cd .repo
-  mv local_manifest.xml local_manifest.xml.bak
-  cd ..
-  cd android
-  sed -i s/'default revision=.*'/'default revision="refs\/heads\/'$1'"'/ default.xml
-  git commit -a -m "$1"
-  cd ..
-
-  repo forall -c '
-
-  if [ "$REPO_REMOTE" == "github" ]
-  then
-    pwd
-    cmremote
-    git push cmremote HEAD:refs/heads/'$1'
-  fi
-  '
-
-  cd .repo
-  mv local_manifest.xml.bak local_manifest.xml
-  cd ..
-}
-
-function cmgerrit() {
-    if [ $# -eq 0 ]; then
-        $FUNCNAME help
-        return 1
-    fi
-    local user=`git config --get review.review.cyanogenmod.org.username`
-    local review=`git config --get remote.github.review`
-    local project=`git config --get remote.github.projectname`
-    local command=$1
-    shift
-    case $command in
-        help)
-            if [ $# -eq 0 ]; then
-                cat <<EOF
-Usage:
-    $FUNCNAME COMMAND [OPTIONS] [CHANGE-ID[/PATCH-SET]][{@|^|~|:}ARG] [-- ARGS]
-
-Commands:
-    fetch   Just fetch the change as FETCH_HEAD
-    help    Show this help, or for a specific command
-    pull    Pull a change into current branch
-    push    Push HEAD or a local branch to Gerrit for a specific branch
-
-Any other Git commands that support refname would work as:
-    git fetch URL CHANGE && git COMMAND OPTIONS FETCH_HEAD{@|^|~|:}ARG -- ARGS
-
-See '$FUNCNAME help COMMAND' for more information on a specific command.
-
-Example:
-    $FUNCNAME checkout -b topic 1234/5
-works as:
-    git fetch http://DOMAIN/p/PROJECT refs/changes/34/1234/5 \\
-      && git checkout -b topic FETCH_HEAD
-will checkout a new branch 'topic' base on patch-set 5 of change 1234.
-Patch-set 1 will be fetched if omitted.
-EOF
-                return
-            fi
-            case $1 in
-                __cmg_*) echo "For internal use only." ;;
-                changes|for)
-                    if [ "$FUNCNAME" = "cmgerrit" ]; then
-                        echo "'$FUNCNAME $1' is deprecated."
-                    fi
-                    ;;
-                help) $FUNCNAME help ;;
-                fetch|pull) cat <<EOF
-usage: $FUNCNAME $1 [OPTIONS] CHANGE-ID[/PATCH-SET]
-
-works as:
-    git $1 OPTIONS http://DOMAIN/p/PROJECT \\
-      refs/changes/HASH/CHANGE-ID/{PATCH-SET|1}
-
-Example:
-    $FUNCNAME $1 1234
-will $1 patch-set 1 of change 1234
-EOF
-                    ;;
-                push) cat <<EOF
-usage: $FUNCNAME push [OPTIONS] [LOCAL_BRANCH:]REMOTE_BRANCH
-
-works as:
-    git push OPTIONS ssh://USER@DOMAIN:29418/PROJECT \\
-      {LOCAL_BRANCH|HEAD}:refs/for/REMOTE_BRANCH
-
-Example:
-    $FUNCNAME push fix6789:gingerbread
-will push local branch 'fix6789' to Gerrit for branch 'gingerbread'.
-HEAD will be pushed from local if omitted.
-EOF
-                    ;;
-                *)
-                    $FUNCNAME __cmg_err_not_supported $1 && return
-                    cat <<EOF
-usage: $FUNCNAME $1 [OPTIONS] CHANGE-ID[/PATCH-SET][{@|^|~|:}ARG] [-- ARGS]
-
-works as:
-    git fetch http://DOMAIN/p/PROJECT \\
-      refs/changes/HASH/CHANGE-ID/{PATCH-SET|1} \\
-      && git $1 OPTIONS FETCH_HEAD{@|^|~|:}ARG -- ARGS
-EOF
-                    ;;
-            esac
-            ;;
-        __cmg_get_ref)
-            $FUNCNAME __cmg_err_no_arg $command $# && return 1
-            local change_id patchset_id hash
-            case $1 in
-                */*)
-                    change_id=${1%%/*}
-                    patchset_id=${1#*/}
-                    ;;
-                *)
-                    change_id=$1
-                    patchset_id=1
-                    ;;
-            esac
-            hash=$(($change_id % 100))
-            case $hash in
-                [0-9]) hash="0$hash" ;;
-            esac
-            echo "refs/changes/$hash/$change_id/$patchset_id"
-            ;;
-        fetch|pull)
-            $FUNCNAME __cmg_err_no_arg $command $# help && return 1
-            $FUNCNAME __cmg_err_not_repo && return 1
-            local change=$1
-            shift
-            git $command $@ http://$review/p/$project \
-                $($FUNCNAME __cmg_get_ref $change) || return 1
-            ;;
-        push)
-            $FUNCNAME __cmg_err_no_arg $command $# help && return 1
-            $FUNCNAME __cmg_err_not_repo && return 1
-            if [ -z "$user" ]; then
-                echo >&2 "Gerrit username not found."
-                return 1
-            fi
-            local local_branch remote_branch
-            case $1 in
-                *:*)
-                    local_branch=${1%:*}
-                    remote_branch=${1##*:}
-                    ;;
-                *)
-                    local_branch=HEAD
-                    remote_branch=$1
-                    ;;
-            esac
-            shift
-            git push $@ ssh://$user@$review:29418/$project \
-                $local_branch:refs/for/$remote_branch || return 1
-            ;;
-        changes|for)
-            if [ "$FUNCNAME" = "cmgerrit" ]; then
-                echo >&2 "'$FUNCNAME $command' is deprecated."
-            fi
-            ;;
-        __cmg_err_no_arg)
-            if [ $# -lt 2 ]; then
-                echo >&2 "'$FUNCNAME $command' missing argument."
-            elif [ $2 -eq 0 ]; then
-                if [ -n "$3" ]; then
-                    $FUNCNAME help $1
-                else
-                    echo >&2 "'$FUNCNAME $1' missing argument."
-                fi
-            else
-                return 1
-            fi
-            ;;
-        __cmg_err_not_repo)
-            if [ -z "$review" -o -z "$project" ]; then
-                echo >&2 "Not currently in any reviewable repository."
-            else
-                return 1
-            fi
-            ;;
-        __cmg_err_not_supported)
-            $FUNCNAME __cmg_err_no_arg $command $# && return
-            case $1 in
-                #TODO: filter more git commands that don't use refname
-                init|add|rm|mv|status|clone|remote|bisect|config|stash)
-                    echo >&2 "'$FUNCNAME $1' is not supported."
-                    ;;
-                *) return 1 ;;
-            esac
-            ;;
-    #TODO: other special cases?
-        *)
-            $FUNCNAME __cmg_err_not_supported $command && return 1
-            $FUNCNAME __cmg_err_no_arg $command $# help && return 1
-            $FUNCNAME __cmg_err_not_repo && return 1
-            local args="$@"
-            local change pre_args refs_arg post_args
-            case "$args" in
-                *--\ *)
-                    pre_args=${args%%-- *}
-                    post_args="-- ${args#*-- }"
-                    ;;
-                *) pre_args="$args" ;;
-            esac
-            args=($pre_args)
-            pre_args=
-            if [ ${#args[@]} -gt 0 ]; then
-                change=${args[${#args[@]}-1]}
-            fi
-            if [ ${#args[@]} -gt 1 ]; then
-                pre_args=${args[0]}
-                for ((i=1; i<${#args[@]}-1; i++)); do
-                    pre_args="$pre_args ${args[$i]}"
-                done
-            fi
-            while ((1)); do
-                case $change in
-                    ""|--)
-                        $FUNCNAME help $command
-                        return 1
-                        ;;
-                    *@*)
-                        if [ -z "$refs_arg" ]; then
-                            refs_arg="@${change#*@}"
-                            change=${change%%@*}
-                        fi
-                        ;;
-                    *~*)
-                        if [ -z "$refs_arg" ]; then
-                            refs_arg="~${change#*~}"
-                            change=${change%%~*}
-                        fi
-                        ;;
-                    *^*)
-                        if [ -z "$refs_arg" ]; then
-                            refs_arg="^${change#*^}"
-                            change=${change%%^*}
-                        fi
-                        ;;
-                    *:*)
-                        if [ -z "$refs_arg" ]; then
-                            refs_arg=":${change#*:}"
-                            change=${change%%:*}
-                        fi
-                        ;;
-                    *) break ;;
-                esac
-            done
-            $FUNCNAME fetch $change \
-                && git $command $pre_args FETCH_HEAD$refs_arg $post_args \
-                || return 1
-            ;;
-    esac
-}
-
-function cmrebase() {
-    local repo=$1
-    local refs=$2
-    local pwd="$(pwd)"
-    local dir="$(gettop)/$repo"
-
-    if [ -z $repo ] || [ -z $refs ]; then
-        echo "CyanogenMod Gerrit Rebase Usage: "
-        echo "      cmrebase <path to project> <patch IDs on Gerrit>"
-        echo "      The patch IDs appear on the Gerrit commands that are offered."
-        echo "      They consist on a series of numbers and slashes, after the text"
-        echo "      refs/changes. For example, the ID in the following command is 26/8126/2"
-        echo ""
-        echo "      git[...]ges_apps_Camera refs/changes/26/8126/2 && git cherry-pick FETCH_HEAD"
-        echo ""
-        return
-    fi
-
-    if [ ! -d $dir ]; then
-        echo "Directory $dir doesn't exist in tree."
-        return
-    fi
-    cd $dir
-    repo=$(cat .git/config  | grep git://github.com | awk '{ print $NF }' | sed s#git://github.com/##g)
-    echo "Starting branch..."
-    repo start tmprebase .
-    echo "Bringing it up to date..."
-    repo sync .
-    echo "Fetching change..."
-    git fetch "http://review.cyanogenmod.org/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
-    if [ "$?" != "0" ]; then
-        echo "Error cherry-picking. Not uploading!"
-        return
-    fi
-    echo "Uploading..."
-    repo upload .
-    echo "Cleaning up..."
-    repo abandon tmprebase .
-    cd $pwd
-}
-
 function mka() {
     case `uname -s` in
         Darwin)
@@ -1981,10 +1722,10 @@ function repolastsync() {
 function reposync() {
     case `uname -s` in
         Darwin)
-            repo sync -j 4 "$@"
+            repo sync -j 4 "$@" > /dev/null
             ;;
         *)
-            schedtool -B -n 1 -e ionice -n 1 `which repo` sync -j 4 "$@"
+            schedtool -B -n 1 -e ionice -n 1 `which repo` sync -j 4 "$@" > /dev/null
             ;;
     esac
 }
@@ -2186,7 +1927,8 @@ if [ "x$SHELL" != "x/bin/bash" ]; then
 fi
 
 # Execute the contents of any vendorsetup.sh files we can find.
-for f in `/bin/ls vendor/*/vendorsetup.sh vendor/*/*/vendorsetup.sh device/*/*/vendorsetup.sh 2> /dev/null`
+for f in `test -d device && find device -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null` \
+         `test -d vendor && find vendor -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null`
 do
     echo "including $f"
     . $f
@@ -2195,7 +1937,7 @@ unset f
 
 # Add completions
 check_bash_version && {
-    dirs="sdk/bash_completion vendor/cm/bash_completion"
+    dirs="sdk/bash_completion vendor/oct/bash_completion"
     for dir in $dirs; do
     if [ -d ${dir} ]; then
         for f in `/bin/ls ${dir}/[a-z]*.bash 2> /dev/null`; do

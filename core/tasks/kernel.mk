@@ -150,7 +150,7 @@ ifeq ($(TARGET_ARCH),arm)
     else
         ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ccache) $(ARM_EABI_TOOLCHAIN)/arm-eabi-"
     endif
-    ccache = 
+    ccache =
 endif
 
 ifeq ($(HOST_OS),darwin)

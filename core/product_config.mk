@@ -362,13 +362,8 @@ endif
 # The rules for these copy steps are defined in build/core/Makefile.
 # The optional :<owner> is used to indicate the owner of a vendor file.
 PRODUCT_COPY_FILES := \
-    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES))
-_boot_animation := $(strip $(lastword $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BOOTANIMATION)))
-ifneq ($(_boot_animation),)
-PRODUCT_COPY_FILES += \
-    $(_boot_animation):system/media/bootanimation.zip
-endif
-_boot_animation :=
+    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES)) \
+    $(lastword $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BOOTANIMATION)):system/media/bootanimation.zip
 
 # We might want to skip items listed in PRODUCT_COPY_FILES for
 # various reasons. This is useful for replacing a binary module with one

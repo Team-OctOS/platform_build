@@ -19,6 +19,7 @@
 PRODUCT_PACKAGES += \
     ContactsProvider \
     DefaultContainerService \
+    Launcher3 \
     TelephonyProvider \
     UserDictionaryProvider \
     atrace \
