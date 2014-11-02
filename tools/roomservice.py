@@ -34,12 +34,12 @@ except ImportError:
 
 # Config
 # set this to the default remote to use in repo
-default_rem = "gh"
+default_rem = "ok"
 # set this to the default revision to use (branch/tag name)
 default_rev = "WIP" #Temp branch until merged
 # set this to the remote that you use for projects from your team repos
 # example fetch="https://github.com/omnirom"
-default_team_rem = "gh"
+default_team_rem = "ok"
 # this shouldn't change unless google makes changes
 local_manifest_dir = ".repo/local_manifests"
 # change this to your name on github (or equivalent hosting)
@@ -85,7 +85,7 @@ def get_device_url(git_data):
                     break
 
     if device_url:
-        return "{}/{}".format(platform_team, device_url)
+        return "{}".format(device_url)
     raise Exception("{} not found in {} Github, exiting "
                     "roomservice".format(device, platform_team))
 
