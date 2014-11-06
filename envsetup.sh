@@ -1500,11 +1500,11 @@ function toremote()
         fi
     fi
     TOUSER=`git config --get review.review.teamoctos.com.username`
-    if [ -z "$CRUSER" ]
+    if [ -z "$TOUSER" ]
     then
         git remote add toremote ssh://review.teamoctos.com:29418/$GERRIT_REMOTE
     else
-        git remote add crremote ssh://$TOUSER@review.teamoctos.com:29418/$GERRIT_REMOTE
+        git remote add toremote ssh://$TOUSER@review.teamoctos.com:29418/$GERRIT_REMOTE
     fi
     echo You can now push to "toremote".
 }
@@ -1539,7 +1539,7 @@ function torebase() {
     echo "Bringing it up to date..."
     repo sync .
     echo "Fetching change..."
-    git fetch "http://review.carbonrom.org/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
+    git fetch "http://review.teamoctos.com/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
     if [ "$?" != "0" ]; then
         echo "Error cherry-picking. Not uploading!"
         return
