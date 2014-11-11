@@ -1596,9 +1596,6 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 .PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
-ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
-	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
-endif
 ifeq ($(USE_PREBUILT_CHROMIUM),1)
 ifneq ($(PRODUCT_PREBUILT_WEBVIEWCHROMIUM),yes)
 	@echo "Running Chromium prebuilt setup script..."
