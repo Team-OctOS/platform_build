@@ -181,7 +181,7 @@ include $(BUILD_SYSTEM)/device.mk
 
 # A OctOS build needs only the OctOS product makefiles.
 ifneq ($(OCT_BUILD),)
-  all_product_configs := $(shell ls device/*/$(OCT_BUILD)/oct.mk)
+  all_product_configs := $(shell ls vendor/oct/device/$(OCT_BUILD)/oct.mk)
 else
   ifneq ($(strip $(TARGET_BUILD_APPS)),)
   # An unbundled app build needs only the core product makefiles.
