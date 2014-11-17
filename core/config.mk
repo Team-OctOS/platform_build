@@ -23,7 +23,7 @@ comma := ,
 # only has an effect on python 2.6 and above.
 export PYTHONDONTWRITEBYTECODE := 1
 
--include $(TOPDIR)vendor/oct/twrp/$(TARGET_DEVICE)/BoardConfigExtra.mk
+#-include $(TOPDIR)vendor/oct/twrp/$(TARGET_DEVICE)/BoardConfigExtra.mk
 
 # Standard source directories.
 SRC_DOCS:= $(TOPDIR)docs
