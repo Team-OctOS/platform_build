@@ -2353,4 +2353,11 @@ fi
 #    done
 #}
 
+# Execute the contents of any vendorsetup.sh files we can find.
+for f in `/bin/ls vendor/to/vendorsetup.sh 2> /dev/null`
+do
+    . $f
+done
+unset f
+
 export ANDROID_BUILD_TOP=$(gettop)
