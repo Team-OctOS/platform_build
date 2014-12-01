@@ -1638,15 +1638,6 @@ name := $(name)-ota-$(FILE_NAME_TAG)
 
 INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name).zip
 
-export OTA_PACKAGE_PATH :=$(INTERNAL_OTA_PACKAGE_TARGET)
-
-ifeq ($($(strip DHO_VENDOR)),)
-  DHO_VENDOR := to
-endif
-ifeq ($(strip $(FORCE_PRECOMPILED_DALVIK)), true)
-  SQUISHER_ARGS := $(TARGET_BOARD_PLATFORM)
-endif
-
 $(INTERNAL_OTA_PACKAGE_TARGET): KEY_CERT_PAIR := $(DEFAULT_KEY_CERT_PAIR)
 
 ifeq ($(TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT),)
@@ -1695,13 +1686,10 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
-	@echo -e ${CL_YLW}"Running custom releasetool..."${CL_RST}
-	$(hide) $(TARGET_CUSTOM_RELEASETOOL)
-else
-	@echo -e ${CL_YLW}"Running releasetool..."${CL_RST}
-	$(hide) ./vendor/$(DHO_VENDOR)/tools/squisher $(SQUISHER_ARGS)
+	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
 endif
-
+	@echo -e ${CL_YLW}"Running vendor releasetool..."${CL_RST}
+	$(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET) APKCERTS=$(APKCERTS_FILE) ./vendor/to/tools/squisher
 endif    # recovery_fstab is defined
 endif    # TARGET_NO_KERNEL != true
 endif    # TARGET_DEVICE != generic*
