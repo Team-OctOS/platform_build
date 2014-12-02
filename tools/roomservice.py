@@ -204,8 +204,24 @@ def parse_device_from_folder(device):
         location = parse_device_from_manifest(device)
     return location
 
+def parse_device_from_vendor(device):
+    search = []
+    for sub_folder in os.listdir("device"):
+        if os.path.isdir("vendor/to/device/%s/%s" % (sub_folder, device)):
+            search.append("vendor/to/device/%s/%s" % (sub_folder, device))
+    if len(search) > 1:
+        print("multiple devices under the name %s. "
+              "can not continue" % device)
+        location = None
+    elif len(search) == 1:
+        location = search[0]
+    else:
+        print("you device can't be found in vendor sources..")
+        location = None
+    return location
+
 def parse_dependency_file(location):
-    dep_file = "cm.dependencies"
+    dep_file = "to.dependencies"
     dep_location = '/'.join([location, dep_file])
     if not os.path.isfile(dep_location):
         print("WARNING: %s file not found" % dep_location)
@@ -244,7 +260,7 @@ def create_dependency_manifest(dependencies):
 
 
 def fetch_dependencies(device):
-    location = parse_device_from_folder(device)
+    location = parse_device_from_vendor(device)
     if location is None or not os.path.isdir(location):
         raise Exception("ERROR: could not find your device "
                         "folder location, bailing out")
@@ -253,7 +269,7 @@ def fetch_dependencies(device):
 
 
 def check_device_exists(device):
-    location = parse_device_from_folder(device)
+    location = parse_device_from_vendor(device)
     if location is None:
         return False
     return os.path.isdir(location)
@@ -261,7 +277,8 @@ def check_device_exists(device):
 
 def fetch_device(device):
     if check_device_exists(device):
-        print("WARNING: Trying to fetch a device that's already there")
+        #print("WARNING: Trying to fetch a device that's already there")
+        print("WARNING: to.dependencies file required")
         return
     git_data = search_github_for_device(device)
     device_url = get_device_url(git_data)
