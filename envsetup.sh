@@ -1643,6 +1643,13 @@ function godir () {
 
 # Make using all available CPUs
 function mka() {
+    ## Clean Up the Garbage
+    echo "Removing Previous Builds for $OUT"
+    rm -rf $OUT/system/build.prop
+    rm -rf $OUT/OCT-N*.zip*
+    rm -rf $OUT/to_*ota*.zip
+    echo "Clean Up Complete! Time to Make it Dirty"
+
     case `uname -s` in
         Darwin)
             make -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
