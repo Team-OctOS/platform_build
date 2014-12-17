@@ -34,16 +34,16 @@ except ImportError:
 
 # Config
 # set this to the default remote to use in repo
-default_rem = "cm"
+default_rem = "to"
 # set this to the default revision to use (branch/tag name)
-default_rev = "cm-12.0"
+default_rev = "to-5.0"
 # set this to the remote that you use for projects from your team repos
 # example fetch="https://github.com/omnirom"
-default_team_rem = "cm"
+default_team_rem = "to"
 # this shouldn't change unless google makes changes
 local_manifest_dir = ".repo/local_manifests"
 # change this to your name on github (or equivalent hosting)
-android_team = "CyanogenMod"
+android_team = "Team-OctOS"
 
 
 def check_repo_exists(git_data):
@@ -55,7 +55,7 @@ def check_repo_exists(git_data):
 # Note that this can only be done 5 times per minute
 def search_github_for_device(device):
     git_search_url = "https://api.github.com/search/repositories" \
-                     "?q=%40{}+android_device+{}+fork:true".format(android_team, device)
+                     "?q=%40{}+platform_device+{}+fork:true".format(android_team, device)
     git_req = urllib.request.Request(git_search_url)
     # this api is a preview at the moment. accept the custom media type
     git_req.add_header('Accept', 'application/vnd.github.preview')
@@ -74,9 +74,9 @@ def get_device_url(git_data):
     device_url = ""
     for item in git_data['items']:
         temp_url = item.get('html_url')
-        if "{}/android_device".format(android_team) in temp_url:
+        if "{}/platform_device".format(android_team) in temp_url:
             try:
-                temp_url = temp_url[temp_url.index("android_device"):]
+                temp_url = temp_url[temp_url.index("platform_device"):]
             except ValueError:
                 pass
             else:
@@ -91,7 +91,7 @@ def get_device_url(git_data):
 
 
 def parse_device_directory(device_url,device):
-    to_strip = "android_device"
+    to_strip = "platform_device"
     repo_name = device_url[device_url.index(to_strip) + len(to_strip):]
     repo_name = repo_name[:repo_name.index(device)]
     repo_dir = repo_name.replace("_", "/")
@@ -183,7 +183,7 @@ def write_to_manifest(manifest):
 def parse_device_from_manifest(device):
     for project in iterate_manifests():
         name = project.get('name')
-        if name.startswith("android_device_") and name.endswith(device):
+        if name.rfind("_device_") and name.endswith(device):
             return project.get('path')
     return None
 
@@ -206,7 +206,7 @@ def parse_device_from_folder(device):
 
 def parse_device_from_vendor(device):
     search = []
-    for sub_folder in os.listdir("device"):
+    for sub_folder in os.listdir("vendor/to/device"):
         if os.path.isdir("vendor/to/device/%s/%s" % (sub_folder, device)):
             search.append("vendor/to/device/%s/%s" % (sub_folder, device))
     if len(search) > 1:
@@ -277,8 +277,7 @@ def check_device_exists(device):
 
 def fetch_device(device):
     if check_device_exists(device):
-        #print("WARNING: Trying to fetch a device that's already there")
-        print("WARNING: to.dependencies file required")
+        print("WARNING: Trying to fetch a device that's already there")
         return
     git_data = search_github_for_device(device)
     device_url = get_device_url(git_data)
