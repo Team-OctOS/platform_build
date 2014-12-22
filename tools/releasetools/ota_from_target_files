@@ -735,6 +735,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("8  [x] Installation Complete!")
   script.Print("")
   script.Print("888888888888888888888888888888888");
+  script.Print("")
+  script.Print("")
 
 
   if OPTIONS.wipe_user_data:
