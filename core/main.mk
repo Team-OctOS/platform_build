@@ -1053,7 +1053,7 @@ findbugs: $(INTERNAL_FINDBUGS_HTML_TARGET) $(INTERNAL_FINDBUGS_XML_TARGET)
 
 .PHONY: clean
 clean:
-	@rm -rf $(OUT_DIR)/target/*
+	@rm -rf $(OUT_DIR)/target/product/$(TO_BUILD)/*
 	@echo -e ${CL_GRN}"Entire out/target directory removed."${CL_RST}
 
 .PHONY: clobber
