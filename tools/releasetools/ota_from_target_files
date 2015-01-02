@@ -716,6 +716,11 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   if OPTIONS.extra_script is not None:
     script.AppendExtra(OPTIONS.extra_script)
 
+  #Install data to /data
+  script.AppendExtra("ifelse(is_mounted(\"/data\"), unmount(\"/data\"));")
+  script.Mount("/data")
+  script.UnpackPackageDir("data", "/data")
+
   script.UnmountAll()
   #SuperSu stuff here
   script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
