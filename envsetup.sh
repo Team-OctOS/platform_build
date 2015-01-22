@@ -1809,7 +1809,13 @@ function mka() {
             make -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
             ;;
         *)
-            schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+	    if [ $TO_OR ]; then
+		echo "Using $TO_OR Threads"
+		schedtool -B -n 1 -e ionice -n 1 make -j$TO_OR "$@"
+	    else
+		echo "No Override"
+            	schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+	    fi
             ;;
     esac
 }
