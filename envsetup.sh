@@ -1810,7 +1810,7 @@ function mka() {
             ;;
         *)
 	    if [[ -z $TO_OR ]]; then
-		TO_OR=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
+		export TO_OR=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
 	    fi
 		echo "Using $TO_OR Threads"
 		schedtool -B -n 1 -e ionice -n 1 make -j$TO_OR "$@"
