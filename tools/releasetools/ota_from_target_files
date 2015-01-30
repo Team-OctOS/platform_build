@@ -643,6 +643,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   else:
     script.FormatPartition("/system")
     script.Mount("/system", recovery_mount_options)
+    script.FormatPartition("/cache")
+    script.DeleteFiles("/data/dalvik-cache")
     script.ShowProgress(0.5, 90)
     script.Print("8  [x] Installing System...")
     script.Print("")
