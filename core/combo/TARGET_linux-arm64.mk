@@ -37,11 +37,21 @@ endif
 # Decouple NDK library selection with platform compiler version
 TARGET_NDK_GCC_VERSION := 4.9
 
-ifeq ($(strip $(TARGET_GCC_VERSION_EXP)),)
-TARGET_GCC_VERSION := 4.9
+ifeq ($(strip $(TARGET_GCC_VERSION_AND)),)
+TARGET_GCC_VERSION_AND := 4.9
 else
-TARGET_GCC_VERSION := $(TARGET_GCC_VERSION_EXP)
+TARGET_GCC_VERSION_AND := $(TARGET_GCC_VERSION_AND)
 endif
+
+ifeq ($(strip $(TARGET_GCC_VERSION_ARM)),)
+TARGET_GCC_VERSION_ARM := 4.9
+else
+TARGET_GCC_VERSION_ARM := $(TARGET_GCC_VERSION_ARM)
+endif
+
+# Specify Target Custom GCC Chains to use:
+#TARGET_GCC_VERSION_AND := 4.9
+#TARGET_GCC_VERSION_ARM := 4.9
 
 TARGET_ARCH_SPECIFIC_MAKEFILE := $(BUILD_COMBOS)/arch/$(TARGET_ARCH)/$(TARGET_ARCH_VARIANT).mk
 ifeq ($(strip $(wildcard $(TARGET_ARCH_SPECIFIC_MAKEFILE))),)
@@ -53,7 +63,7 @@ include $(BUILD_SYSTEM)/combo/fdo.mk
 
 # You can set TARGET_TOOLS_PREFIX to get gcc from somewhere else
 ifeq ($(strip $(TARGET_TOOLS_PREFIX)),)
-TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/aarch64/aarch64-linux-android-$(TARGET_GCC_VERSION)
+TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/aarch64/aarch64-linux-android-$(TARGET_GCC_VERSION_AND)
 TARGET_TOOLS_PREFIX := $(TARGET_TOOLCHAIN_ROOT)/bin/aarch64-linux-android-
 endif
 
