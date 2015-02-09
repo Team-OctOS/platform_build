@@ -141,25 +141,29 @@ function setpaths()
     gccprebuiltdir=$(get_abs_build_var ANDROID_GCC_PREBUILTS)
 
     # defined in core/config.mk
-    targetgccversion=$(get_build_var TARGET_GCC_VERSION)
-    targetgccversion2=$(get_build_var 2ND_TARGET_GCC_VERSION)
-    export TARGET_GCC_VERSION=$targetgccversion
+    targetgccversionarm=$(get_build_var TARGET_GCC_VERSION_ARM)
+    targetgccversionarm2=$(get_build_var 2ND_TARGET_GCC_VERSION_ARM)
+    export TARGET_GCC_VERSION_ARM=$targetgccversionarm
+
+    targetgccversionand=$(get_build_var TARGET_GCC_VERSION_AND)
+    targetgccversionand2=$(get_build_var 2ND_TARGET_GCC_VERSION_AND)
+    export TARGET_GCC_VERSION_AND=$targetgccversionand
 
     # The gcc toolchain does not exists for windows/cygwin. In this case, do not reference it.
     export ANDROID_TOOLCHAIN=
     export ANDROID_TOOLCHAIN_2ND_ARCH=
     local ARCH=$(get_build_var TARGET_ARCH)
     case $ARCH in
-        x86) toolchaindir=x86/x86_64-linux-android-$targetgccversion/bin
+        x86) toolchaindir=x86/x86_64-linux-android-$targetgccversionand/bin
             ;;
-        x86_64) toolchaindir=x86/x86_64-linux-android-$targetgccversion/bin
+        x86_64) toolchaindir=x86/x86_64-linux-android-$targetgccversionand/bin
             ;;
-        arm) toolchaindir=arm/arm-linux-androideabi-$targetgccversion/bin
+        arm) toolchaindir=arm/arm-linux-androideabi-$targetgccversionand/bin
             ;;
-        arm64) toolchaindir=aarch64/aarch64-linux-android-$targetgccversion/bin;
-               toolchaindir2=arm/arm-linux-androideabi-$targetgccversion2/bin
+        arm64) toolchaindir=aarch64/aarch64-linux-android-$targetgccversionand/bin;
+               toolchaindir2=arm/arm-linux-androideabi-$targetgccversionand2/bin
             ;;
-        mips|mips64) toolchaindir=mips/mips64el-linux-android-$targetgccversion/bin
+        mips|mips64) toolchaindir=mips/mips64el-linux-android-$targetgccversionand/bin
             ;;
         *)
             echo "Can't find toolchain for unknown architecture: $ARCH"
@@ -178,7 +182,7 @@ function setpaths()
     case $ARCH in
         arm)
             # Legacy toolchain configuration used for ARM kernel compilation
-            toolchaindir=arm/arm-eabi-$targetgccversion/bin
+            toolchaindir=arm/arm-eabi-$targetgccversionarm/bin
             if [ -d "$gccprebuiltdir/$toolchaindir" ]; then
                  export ARM_EABI_TOOLCHAIN="$gccprebuiltdir/$toolchaindir"
                  ANDROID_KERNEL_TOOLCHAIN_PATH="$ARM_EABI_TOOLCHAIN":
