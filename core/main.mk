@@ -1061,6 +1061,11 @@ clobber:
 	@rm -rf $(OUT_DIR)/*
 	@echo -e ${CL_GRN}"Entire build directory removed."${CL_RST}
 
+.PHONY: clubber
+clubber:
+	@rm -rf kernel device vendor .repo/local_manifests
+	@echo -e ${CL_RED}"Returned Source to Pristine State - Please 'repo sync -d'"${CL_RST}
+
 # The rules for dataclean and installclean are defined in cleanbuild.mk.
 
 #xxx scrape this from ALL_MODULE_NAME_TAGS
