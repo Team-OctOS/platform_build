@@ -1066,6 +1066,10 @@ clubber:
 	@rm -rf kernel device vendor .repo/local_manifests
 	@echo -e ${CL_RED}"Returned Source to Pristine State - Please 'repo sync -d'"${CL_RST}
 
+.PHONY: kernel
+kernel:
+	@. build/tools/build_kernel.sh
+
 # The rules for dataclean and installclean are defined in cleanbuild.mk.
 
 #xxx scrape this from ALL_MODULE_NAME_TAGS
