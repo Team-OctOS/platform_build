@@ -1065,10 +1065,8 @@ clobber:
 clubber:
 	@rm -rf kernel device vendor .repo/local_manifests prebuilts/chromium
 ifneq ($(CCACHE_DIR),)
-ifneq ($(CCACHE_PATH),)
 	@echo -e ${CL_YLW}"Clearing CCache...  This WILL take a while! Be Patient..."${CL_RST}
 	@ccache -C
-endif
 endif
 	@echo -e ${CL_RED}"Returned Source to Pristine State - Please 'repo sync -d'"${CL_RST}
 
