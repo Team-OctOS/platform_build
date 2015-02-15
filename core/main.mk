@@ -1062,7 +1062,7 @@ clobber:
 	@echo -e ${CL_GRN}"Entire build directory removed."${CL_RST}
 
 .PHONY: clubber
-clubber:
+clubber: clobber
 	@rm -rf kernel device vendor .repo/local_manifests prebuilts/chromium
 ifneq ($(CCACHE_DIR),)
 	@echo -e ${CL_YLW}"Clearing CCache...  This WILL take a while! Be Patient..."${CL_RST}
