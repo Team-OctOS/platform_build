@@ -621,7 +621,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("8  .cldoododol'   .:doododooo,  8");
   script.Print("8                               8");
   script.Print("88888888888*TEAM*OCTOS*8888888888");
-  script.Print("8           Android 5.0         8");
+  script.Print("8           Android 5.1         8");
   script.Print("888888888888888888888888888888888");
 
   if "selinux_fc" in OPTIONS.info_dict:
