@@ -149,7 +149,7 @@ javac_version_str := $(shell unset _JAVA_OPTIONS && javac -version 2>&1)
 # Check for the correct version of java, should be 1.7 by
 # default, and 1.6 if LEGACY_USE_JAVA6 is set.
 ifeq ($(LEGACY_USE_JAVA6),)
-required_version := "1.7.x"
+required_version := "1.7"
 required_javac_version := "1.7"
 java_version := $(shell echo '$(java_version_str)' | grep '^java .*[ "]1\.7[\. "$$]')
 javac_version := $(shell echo '$(javac_version_str)' | grep '[ "]1\.7[\. "$$]')
@@ -181,7 +181,7 @@ endif
 requires_openjdk := false
 ifeq ($(LEGACY_USE_JAVA6),)
 ifeq ($(HOST_OS), linux)
-#requires_openjdk := true
+requires_openjdk := true
 endif
 endif
 
@@ -190,15 +190,15 @@ endif
 ifeq ($(requires_openjdk), true)
 # The user asked for java7 openjdk, so check that the host
 # java version is really openjdk
-ifeq ($(shell echo '$(java_version_str)' | grep -i openjdk),)
-$(info ************************************************************)
-$(info You asked for an OpenJDK 7 build but your version is)
-$(info $(java_version_str).)
-$(info ************************************************************)
-$(error stop)
-endif # java version is not OpenJdk
+#ifeq ($(shell echo '$(java_version_str)' | grep -i '$(required_version)'),)
+#$(info ************************************************************)
+#$(info You asked for an OpenJDK 7 build but your version is)
+#$(info $(java_version_str).)
+#$(info ************************************************************)
+#$(error stop)
+#endif # java version is not OpenJdk
 else # if requires_openjdk
-ifneq ($(shell echo '$(java_version_str)' | grep -i openjdk),)
+ifneq ($(shell echo '$(java_version_str)' | grep -i '$(required_version)'),)
 $(info ************************************************************)
 $(info You are attempting to build with an unsupported JDK.)
 $(info $(space))
@@ -1068,10 +1068,7 @@ clobber:
 clubber: clobber
 	@rm -rf kernel device vendor .repo/local_manifests prebuilts/chromium
 ifneq ($(CCACHE_DIR),)
-ifneq ($(PRESERVE_CCACHE),$(filter true True TRUE 1,$(PRESERVE_CCACHE)))
-	@echo -e ${CL_YLW}"Clearing CCache...  This WILL take a while! Be Patient..."${CL_RST}
-	@ccache -C
-endif
+	@if test -z "$${PRESERVE_CCACHE}" | [[ "$${PRESERVE_CCACHE}" -eq 0 ]]; then echo -e ${CL_YLW}"Clearing CCache...  This WILL take a while! Be Patient..."${CL_RST}; ccache -C; fi
 endif
 	@echo -e ${CL_RED}"Returned Source to Pristine State - Please 'repo sync -d'"${CL_RST}
 
