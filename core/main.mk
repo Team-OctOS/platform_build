@@ -1066,7 +1066,10 @@ clobber:
 
 .PHONY: clubber
 clubber: clobber
-	@rm -rf kernel device vendor .repo/local_manifests prebuilts/chromium
+	@rm -rf kernel device vendor .repo/local_manifests
+
+	@if test -z "$${PRESERVE_PREBUILT_CHROMIUM}" | [[ "$${PRESERVE_PREBUILT_CHROMIUM}" -eq 0 ]]; then echo -e ${CL_YLW}"Removing prebuilt Chromium..."${CL_RST}; rm -rf prebuilts/chromium; fi
+
 ifneq ($(CCACHE_DIR),)
 	@if test -z "$${PRESERVE_CCACHE}" | [[ "$${PRESERVE_CCACHE}" -eq 0 ]]; then echo -e ${CL_YLW}"Clearing CCache...  This WILL take a while! Be Patient..."${CL_RST}; ccache -C; fi
 endif
