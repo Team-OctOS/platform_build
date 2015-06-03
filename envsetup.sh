@@ -1,3 +1,15 @@
+# Build system colors
+if [ ! "$BUILD_WITH_COLORS" = "0" ];
+then
+CL_RED="\033[31m"
+CL_GRN="\033[32m"
+CL_YLW="\033[33m"
+CL_BLU="\033[34m"
+CL_MAG="\033[35m"
+CL_CYN="\033[36m"
+CL_RST="\033[0m"
+fi
+
 function hmm() {
 cat <<EOF
 Invoke ". build/envsetup.sh" from your shell to add the following functions to your environment:
@@ -494,27 +506,39 @@ function print_lunch_menu()
 {
     local uname=$(uname)
     echo
-    echo "You're building on" $uname
-    if [ "$(uname)" = "Darwin" ] ; then
-       echo "  (ohai, koush!)"
-    fi
+    echo -e $CL_GRN"You're building on" $uname$CL_RST
     echo
     if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
-       echo "Breakfast menu... pick a combo:"
+       echo -e $CL_GRN"Breakfast menu... pick a combo:"$CL_RST
     else
-       echo "Lunch menu... pick a combo:"
+       echo -e $CL_GRN"Lunch menu... pick a combo:"$CL_RST
     fi
 
     local i=1
     local choice
+    local community
+    local team
+    if [ -f vendor/to/vendorsetup.sh ] ; then
+        team=`cat vendor/to/vendorsetup.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    fi
+    if [ -f vendor/to/vendorsetup_community.sh ] ; then
+        community=`cat vendor/to/vendorsetup_community.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    fi
+
     for choice in ${LUNCH_MENU_CHOICES[@]}
     do
-        echo " $i. $choice "
+        if [ "$choice" == "$team" ] ; then
+           echo -e $CL_CYN"Team-OctOs supported devices:"$CL_RST
+        fi
+        if [ "$choice" == "$community" ] ; then
+           echo -e $CL_CYN"Community supported devices:"$CL_RST
+        fi
+        echo -e $CL_MAG" $i. $choice "$CL_RST
         i=$(($i+1))
     done | column
 
     if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
-       echo "... and don't forget the bacon!"
+       echo -e $CL_GRN"... and don't forget the bacon!"$CL_RST
     fi
 
     echo
@@ -538,8 +562,8 @@ function breakfast()
     local variant=$2
     TO_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
-    add_lunch_combo full-eng
-    for f in `/bin/ls vendor/to/vendorsetup.sh 2> /dev/null`
+    #add_lunch_combo full-eng
+    for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -2390,7 +2414,7 @@ fi
 #}
 
 # Execute the contents of any vendorsetup.sh files we can find.
-for f in `/bin/ls vendor/to/vendorsetup.sh 2> /dev/null`
+for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
 do
     . $f
 done
