@@ -1,15 +1,3 @@
-# Build system colors
-if [ ! "$BUILD_WITH_COLORS" = "0" ];
-then
-CL_RED="\033[31m"
-CL_GRN="\033[32m"
-CL_YLW="\033[33m"
-CL_BLU="\033[34m"
-CL_MAG="\033[35m"
-CL_CYN="\033[36m"
-CL_RST="\033[0m"
-fi
-
 function hmm() {
 cat <<EOF
 Invoke ". build/envsetup.sh" from your shell to add the following functions to your environment:
@@ -506,12 +494,12 @@ function print_lunch_menu()
 {
     local uname=$(uname)
     echo
-    echo -e $CL_GRN"You're building on" $uname$CL_RST
+    echo "You're building on" $uname
     echo
     if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
-       echo -e $CL_GRN"Breakfast menu... pick a combo:"$CL_RST
+       echo "Breakfast menu... pick a combo:"
     else
-       echo -e $CL_GRN"Lunch menu... pick a combo:"$CL_RST
+       echo "Lunch menu... pick a combo:"
     fi
 
     local i=1
@@ -528,17 +516,17 @@ function print_lunch_menu()
     for choice in ${LUNCH_MENU_CHOICES[@]}
     do
         if [ "$choice" == "$team" ] ; then
-           echo -e $CL_CYN"Team-OctOs supported devices:"$CL_RST
+           echo "Team-OctOs supported devices:"
         fi
         if [ "$choice" == "$community" ] ; then
-           echo -e $CL_CYN"Community supported devices:"$CL_RST
+           echo "Community supported devices:"
         fi
-        echo -e $CL_MAG" $i. $choice "$CL_RST
+        echo " $i. $choice "
         i=$(($i+1))
     done | column
 
     if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
-       echo -e $CL_GRN"... and don't forget the bacon!"$CL_RST
+       echo "... and don't forget the bacon!"
     fi
 
     echo
