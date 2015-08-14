@@ -179,21 +179,22 @@ include $(BUILD_SYSTEM)/node_fns.mk
 include $(BUILD_SYSTEM)/product.mk
 include $(BUILD_SYSTEM)/device.mk
 
-ifneq ($(strip $(TARGET_BUILD_APPS)),)
-# An unbundled app build needs only the core product makefiles.
-all_product_configs := $(call get-product-makefiles,\
-    $(SRC_TARGET_DIR)/product/AndroidProducts.mk)
+# A OctOS build needs only relative product makefiles.
+ifneq ($(TO_BUILD),)
+  all_product_configs := $(shell ls vendor/to/device/*/$(TO_BUILD)/to.mk)
 else
-  ifneq ($(CM_BUILD),)
-    all_product_configs := $(shell ls device/*/$(CM_BUILD)/cm.mk)
+  ifneq ($(strip $(TARGET_BUILD_APPS)),)
+  # An unbundled app build needs only the core product makefiles.
+  all_product_configs := $(call get-product-makefiles,\
+      $(SRC_TARGET_DIR)/product/AndroidProducts.mk)
   else
     # Read in all of the product definitions specified by the AndroidProducts.mk
     # files in the tree.
     all_product_configs := $(get-all-product-makefiles)
-  endif
-endif
+  endif # TARGET_BUILD_APPS
+endif # TO_BUILD
 
-ifeq ($(CM_BUILD),)
+ifeq ($(TO_BUILD),)
 # Find the product config makefile for the current product.
 # all_product_configs consists items like:
 # <product_name>:<path_to_the_product_makefile>
