@@ -460,12 +460,12 @@ function add_lunch_combo()
 }
 
 # add the default one here
-add_lunch_combo aosp_arm-eng
-add_lunch_combo aosp_arm64-eng
-add_lunch_combo aosp_mips-eng
-add_lunch_combo aosp_mips64-eng
-add_lunch_combo aosp_x86-eng
-add_lunch_combo aosp_x86_64-eng
+#add_lunch_combo aosp_arm-eng
+#add_lunch_combo aosp_arm64-eng
+#add_lunch_combo aosp_mips-eng
+#add_lunch_combo aosp_mips64-eng
+#add_lunch_combo aosp_x86-eng
+#add_lunch_combo aosp_x86_64-eng
 
 function print_lunch_menu()
 {
@@ -473,18 +473,88 @@ function print_lunch_menu()
     echo
     echo "You're building on" $uname
     echo
-    echo "Lunch menu... pick a combo:"
+    if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
+       echo "Breakfast menu... pick a combo:"
+    else
+       echo "Lunch menu... pick a combo:"
+    fi
 
     local i=1
     local choice
+    local community
+    local team
+    if [ -f vendor/to/vendorsetup.sh ] ; then
+        team=`cat vendor/to/vendorsetup.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    fi
+    if [ -f vendor/to/vendorsetup_community.sh ] ; then
+        community=`cat vendor/to/vendorsetup_community.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    fi
+
     for choice in ${LUNCH_MENU_CHOICES[@]}
     do
-        echo "     $i. $choice"
+        if [ "$choice" == "$team" ] ; then
+           echo "Team-OctOs supported devices:"
+        fi
+        if [ "$choice" == "$community" ] ; then
+           echo "Community supported devices:"
+        fi
+        echo " $i. $choice "
         i=$(($i+1))
-    done
+    done | column
+
+    if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
+       echo "... and don't forget the bacon!"
+    fi
 
     echo
 }
+
+function brunch()
+{
+    breakfast $*
+    if [ $? -eq 0 ]; then
+        mka bacon
+    else
+        echo "No such item in brunch menu. Try 'breakfast'"
+        return 1
+    fi
+    return $?
+}
+
+function breakfast()
+{
+    target=$1
+    local variant=$2
+    TO_DEVICES_ONLY="true"
+    unset LUNCH_MENU_CHOICES
+    #add_lunch_combo full-eng
+    for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
+        do
+            echo "including $f"
+            . $f
+        done
+    unset f
+
+    if [ $# -eq 0 ]; then
+        # No arguments, so let's have the full menu
+        lunch
+    else
+        echo "z$target" | grep -q "-"
+        if [ $? -eq 0 ]; then
+            # A buildtype was specified, assume a full device name
+            lunch $target
+        else
+            # This is probably just the CM model name
+            if [ -z "$variant" ]; then
+                variant="userdebug"
+            fi
+            lunch to_$target-$variant
+        fi
+    fi
+    return $?
+}
+
+alias bib=breakfast
 
 function lunch()
 {
@@ -570,7 +640,7 @@ function _lunch()
     COMPREPLY=( $(compgen -W "${LUNCH_MENU_CHOICES[*]}" -- ${cur}) )
     return 0
 }
-complete -F _lunch lunch
+complete -F _lunch lunch 2>/dev/null
 
 # Configures the build to build unbundled apps.
 # Run tapas with one or more app names (from LOCAL_PACKAGE_NAME)
@@ -1741,10 +1811,30 @@ if [ "x$SHELL" != "x/bin/bash" ]; then
 fi
 
 # Execute the contents of any vendorsetup.sh files we can find.
-for f in `test -d device && find -L device -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null` \
-         `test -d vendor && find -L vendor -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null`
+#for f in `test -d device && find -L device -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null` \
+#         `test -d vendor && find -L vendor -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null`
+#do
+#    echo "including $f"
+#    . $f
+#done
+#unset f
+
+# Add completions
+#check_bash_version && {
+#    dirs="sdk/bash_completion vendor/to/bash_completion"
+#    for dir in $dirs; do
+#    if [ -d ${dir} ]; then
+#        for f in `/bin/ls ${dir}/[a-z]*.bash 2> /dev/null`; do
+#            echo "including $f"
+#            . $f
+#        done
+#    fi
+#    done
+#}
+
+# Execute the contents of any vendorsetup.sh files we can find.
+for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
 do
-    echo "including $f"
     . $f
 done
 unset f
