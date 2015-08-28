@@ -668,12 +668,25 @@ function lunch()
         echo "** Must be one of ${VARIANT_CHOICES[@]}"
         variant=
     fi
-
     local product=$(echo -n $selection | sed -e "s/-.*$//")
     check_product $product
     TARGET_PRODUCT=$product \
     TARGET_BUILD_VARIANT=$variant \
     build_build_var_cache
+    if [ $? -ne 0 ]
+    then
+        # if we can't find the product, try to grab it from our github
+        T=$(gettop)
+        pushd $T > /dev/null
+        build/tools/roomservice.py $product
+        popd > /dev/null
+        check_product $product
+    else
+        T=$(gettop)
+        pushd $T > /dev/null
+        build/tools/roomservice.py $product true
+        popd > /dev/null
+    fi
     if [ $? -ne 0 ]
     then
         echo
