@@ -38,6 +38,8 @@ except ImportError:
 default_rem = "to"
 # set this to the default revision to use (branch/tag name)
 default_rev = "to-6.0"
+# set defualt clone-depth
+default_clone_depth = ""
 # set this to the remote that you use for projects from your team repos
 # example fetch="https://github.com/omnirom"
 default_team_rem = "to"
@@ -141,7 +143,7 @@ def indent(elem, level=0):
             elem.tail = i
 
 
-def create_manifest_project(url, directory,
+def create_manifest_project(url, directory, clone_depth,
                             remote=default_rem,
                             revision=default_rev):
     project_exists = check_project_exists(url)
@@ -149,13 +151,23 @@ def create_manifest_project(url, directory,
     if project_exists:
         return None
 
-    project = ES.Element("project",
-                         attrib={
-                             "path": directory,
-                             "name": url,
-                             "remote": remote,
-                             "revision": revision
-                         })
+    if clone_depth:
+        project = ES.Element("project",
+                             attrib={
+                                 "path": directory,
+                                 "name": url,
+                                 "remote": remote,
+                                 "revision": revision,
+                                 "clone-depth": clone_depth
+                             })
+    else:
+        project = ES.Element("project",
+                             attrib={
+                                 "path": directory,
+                                 "name": url,
+                                 "remote": remote,
+                                 "revision": revision
+                             })
     return project
 
 
@@ -242,6 +254,7 @@ def create_dependency_manifest(dependencies):
         target_path = dependency.get("target_path")
         revision = dependency.get("revision", default_rev)
         remote = dependency.get("remote", default_rem)
+        clone_depth = dependency.get("clone_depth", default_clone_depth)
 
         # not adding an organization should default to android_team
         # only apply this to github
@@ -251,7 +264,8 @@ def create_dependency_manifest(dependencies):
         project = create_manifest_project(repository,
                                           target_path,
                                           remote=remote,
-                                          revision=revision)
+                                          revision=revision,
+                                          clone_depth=clone_depth)
         if not project is None:
             manifest = append_to_manifest(project)
             write_to_manifest(manifest)
