@@ -1578,7 +1578,7 @@ ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	@echo "Running releasetool"
 	$(hide) $(TARGET_CUSTOM_RELEASETOOL)
 else
-	$(hide) ./vendor/cm/tools/squisher
+	$(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET) APKCERTS=$(APKCERTS_FILE) ./vendor/to/tools/to_releasetools
 endif
 
 endif    # recovery_fstab is defined
