@@ -68,12 +68,12 @@ function check_product()
         return
     fi
 
-    if (echo -n $1 | grep -q -e "^cm_") ; then
-       CM_BUILD=$(echo -n $1 | sed -e 's/^cm_//g')
+    if (echo -n $1 | grep -q -e "^to_") ; then
+       TO_BUILD=$(echo -n $1 | sed -e 's/^to_//g')
     else
-       CM_BUILD=
+       TO_BUILD=
     fi
-    export CM_BUILD
+    export TO_BUILD
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
