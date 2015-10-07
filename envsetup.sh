@@ -468,12 +468,12 @@ function add_lunch_combo()
 }
 
 # add the default one here
-add_lunch_combo aosp_arm-eng
-add_lunch_combo aosp_arm64-eng
-add_lunch_combo aosp_mips-eng
-add_lunch_combo aosp_mips64-eng
-add_lunch_combo aosp_x86-eng
-add_lunch_combo aosp_x86_64-eng
+#add_lunch_combo aosp_arm-eng
+#add_lunch_combo aosp_arm64-eng
+#add_lunch_combo aosp_mips-eng
+#add_lunch_combo aosp_mips64-eng
+#add_lunch_combo aosp_x86-eng
+#add_lunch_combo aosp_x86_64-eng
 
 function print_lunch_menu()
 {
@@ -484,7 +484,7 @@ function print_lunch_menu()
        echo "  (ohai, koush!)"
     fi
     echo
-    if [ "z${CM_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
        echo "Breakfast menu... pick a combo:"
     else
        echo "Lunch menu... pick a combo:"
@@ -498,7 +498,7 @@ function print_lunch_menu()
         i=$(($i+1))
     done
 
-    if [ "z${CM_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${TO_DEVICES_ONLY}" != "z" ]; then
        echo "... and don't forget the bacon!"
     fi
 
@@ -520,10 +520,10 @@ function brunch()
 function breakfast()
 {
     target=$1
-    CM_DEVICES_ONLY="true"
+    TO_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/cm/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/to/vendorsetup.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -539,8 +539,8 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the CM model name
-            lunch cm_$target-userdebug
+            # This is probably just the TO model name
+            lunch to_$target-userdebug
         fi
     fi
     return $?
