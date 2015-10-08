@@ -514,8 +514,23 @@ function print_lunch_menu()
 
     local i=1
     local choice
+    local community
+    local team
+    if [ -f vendor/to/vendorsetup.sh ] ; then
+        team=`cat vendor/to/vendorsetup.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    fi
+    if [ -f vendor/to/vendorsetup_community.sh ] ; then
+        community=`cat vendor/to/vendorsetup_community.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    fi
+
     for choice in ${LUNCH_MENU_CHOICES[@]}
     do
+        if [ "$choice" == "$team" ] ; then
+           echo "Team-OctOs supported devices:"
+        fi
+        if [ "$choice" == "$community" ] ; then
+           echo "Community supported devices:"
+        fi
         echo " $i. $choice "
         i=$(($i+1))
     done | column
@@ -545,8 +560,8 @@ function breakfast()
     local variant=$2
     TO_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
-    add_lunch_combo full-eng
-    for f in `/bin/ls vendor/cm/vendorsetup.sh 2> /dev/null`
+    #add_lunch_combo full-eng
+    for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -2132,14 +2147,12 @@ if [ "x$SHELL" != "x/bin/bash" ]; then
     esac
 fi
 
-# Execute the contents of any vendorsetup.sh files we can find.
-#for f in `test -d device && find -L device -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null | sort` \
-#         `test -d vendor && find -L vendor -maxdepth 4 -name 'vendorsetup.sh' 2> /dev/null | sort`
-#do
-#    echo "including $f"
-#    . $f
-#done
-#unset f
+# Execute the contents of any vendorsetup.sh files for Team OctOs
+for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
+do
+     . $f
+done
+unset f
 
 # Add completions
 #check_bash_version && {
