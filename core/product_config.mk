@@ -181,7 +181,7 @@ include $(BUILD_SYSTEM)/device.mk
 
 # A Team OctOS build needs only the TO product makefiles.
 ifneq ($(TO_BUILD),)
-  all_product_configs := $(shell ls vendor/to/products/to_$(TO_BUILD).mk)
+  all_product_configs := $(shell ls vendor/to/product/*/$(TO_BUILD)/to.mk)
 else
   ifneq ($(strip $(TARGET_BUILD_APPS)),)
   # An unbundled app build needs only the core product makefiles.
