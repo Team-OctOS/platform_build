@@ -1120,6 +1120,17 @@ clean:
 .PHONY: clobber
 clobber: clean
 
+.PHONY: clubber
+clubber: clobber
+	@rm -rf kernel device vendor .repo/local_manifests prebuilts/chromium
+ifneq ($(CCACHE_DIR),)
+ifneq ($(PRESERVE_CCACHE),$(filter true True TRUE 1,$(PRESERVE_CCACHE)))
+	@echo "Clearing CCache...  This WILL take a while! Be Patient..."$
+	@ccache -C
+endif
+endif
+	@echo "Returned Source to Pristine State - Please 'repo sync -d'"
+
 # The rules for dataclean and installclean are defined in cleanbuild.mk.
 
 #xxx scrape this from ALL_MODULE_NAME_TAGS
