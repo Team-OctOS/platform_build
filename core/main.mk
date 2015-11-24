@@ -1111,7 +1111,18 @@ clean:
 .PHONY: clobber
 clobber:
 	@rm -rf $(OUT_DIR)/*
-	@echo -e ${CL_GRN}"Entire build directory removed."${CL_RST}
+	@echo "Entire build directory removed."
+
+.PHONY: clubber
+clubber: clobber
+	@rm -rf kernel device vendor .repo/local_manifests prebuilts/chromium
+ifneq ($(CCACHE_DIR),)
+ifneq ($(PRESERVE_CCACHE),$(filter true True TRUE 1,$(PRESERVE_CCACHE)))
+	@echo "Clearing CCache...  This WILL take a while! Be Patient..."$
+	@ccache -C
+endif
+endif
+	@echo "Returned Source to Pristine State - Please 'repo sync -d'"
 
 # The rules for dataclean and installclean are defined in cleanbuild.mk.
 
