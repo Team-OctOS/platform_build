@@ -1817,7 +1817,11 @@ function mka() {
                 make -C $T -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
                 ;;
             *)
-                mk_timer schedtool -B -n 1 -e ionice -n 1 make -C $T -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+                if [[ -z $TO_OR ]]; then
+                    export TO_OR=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
+                fi
+                    echo "Using $TO_OR Threads"
+                    mk_timer schedtool -B -n 1 -e ionice -n 1 make -C $T -j$TO_OR "$@"
                 ;;
         esac
 
