@@ -1087,11 +1087,13 @@ findbugs: $(INTERNAL_FINDBUGS_HTML_TARGET) $(INTERNAL_FINDBUGS_XML_TARGET)
 
 .PHONY: clean
 clean:
-	@rm -rf $(OUT_DIR)/* $(OUT_DIR)/..?* $(OUT_DIR)/.[!.]*
-	@echo "Entire build directory removed."
+	@rm -rf $(OUT_DIR)/target/product/$(TO_BUILD)/*
+	@echo -e ${CL_GRN}"Entire out/target directory removed."${CL_RST}
 
 .PHONY: clobber
-clobber: clean
+clobber:
+	@rm -rf $(OUT_DIR)/*
+	@echo -e ${CL_GRN}"Entire build directory removed."${CL_RST}
 
 # The rules for dataclean and installclean are defined in cleanbuild.mk.
 
