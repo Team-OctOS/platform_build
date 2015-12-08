@@ -22,13 +22,13 @@
 
 PRODUCT_PACKAGES += \
     BasicDreams \
-    Calculator \
     CalendarProvider \
     CaptivePortalLogin \
     CertInstaller \
     Contacts \
     DocumentsUI \
     DownloadProviderUi \
+    ExactCalculator \
     ExternalStorageProvider \
     FusedLocation \
     InputDevices \
