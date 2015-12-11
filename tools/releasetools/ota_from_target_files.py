@@ -643,6 +643,29 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Unmount("/data")
   script.AppendExtra("endif;")
 
+  script.Print("                                 ");
+  script.Print("                                 ");
+  script.Print("888888888888888888888888888888888");
+  script.Print("8                               8");
+  script.Print("8         .;codddddol:,.        8");
+  script.Print("8      :ONM0l,.   ..:kNMXd,     8");
+  script.Print("8   .dNMMO'           .lNMMK:   8");
+  script.Print("8  'XMMMx       ..      .NMMMk  8");
+  script.Print("8 .XMMMX     :KNKXXd.    lMMMMc 8");
+  script.Print("8 :MMMMx    ;MO  :0Mx    .MMMMO 8");
+  script.Print("8 :MMMMx    .XXl,;OWc    .MMMMk 8");
+  script.Print("8  XMMMK      :dkxl.     cMMMW, 8");
+  script.Print("8  .0MMMo               'XMMN:  8");
+  script.Print("8    :KMMx'           'dWMNd.   8");
+  script.Print("8   .  'oONW0:     .dXW0d;  .   8");
+  script.Print("8 .0MWx:;;:KMMo   'XMWl;;;lXMN, 8");
+  script.Print("8 .XMMMMMMMMMMk   :WMMMMMMMMMW; 8");
+  script.Print("8  .cldoododol'   .:doododooo,  8");
+  script.Print("8                               8");
+  script.Print("88888888888*TEAM*OCTOS*8888888888");
+  script.Print("8         Android 6.0.1         8");
+  script.Print("888888888888888888888888888888888");
+
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
@@ -663,6 +686,9 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   else:
     script.FormatPartition("/system")
     script.Mount("/system", recovery_mount_options)
+    script.ShowProgress(0.5, 90)
+    script.Print("8  [x] Installing System...")
+    script.Print("")
     if not has_recovery_patch:
       script.UnpackPackageDir("recovery", "/system")
     script.UnpackPackageDir("system", "/system")
@@ -706,18 +732,23 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
+  script.ShowProgress(0.2, 10)
 
   device_specific.FullOTA_PostValidate()
 
   if OPTIONS.backuptool:
-    script.ShowProgress(0.02, 10)
+    script.ShowProgress(0.2, 10)
+    script.Print("  [x] Restoring Files...")
+    script.Print("")
     if block_based:
       script.Mount("/system")
     script.RunBackup("restore")
     if block_based:
       script.Unmount("/system")
 
-  script.ShowProgress(0.05, 5)
+  script.ShowProgress(0.2, 10)
+  script.Print("  [x] Flashing Kernel...")
+  script.Print("")
   script.WriteRawImage("/boot", "boot.img")
 
   script.ShowProgress(0.2, 10)
@@ -727,6 +758,13 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.AppendExtra(OPTIONS.extra_script)
 
   script.UnmountAll()
+  script.ShowProgress(1, 0)
+  script.Print("  [x] Installation Complete!")
+  script.Print("")
+  script.Print("888888888888888888888888888888888");
+  script.Print("")
+  script.Print("")
+
 
   if OPTIONS.wipe_user_data:
     script.ShowProgress(0.1, 10)
