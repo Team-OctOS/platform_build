@@ -751,12 +751,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("")
   script.WriteRawImage("/boot", "boot.img")
 
-  script.ShowProgress(0.2, 10)
-  device_specific.FullOTA_InstallEnd()
-
-  if OPTIONS.extra_script is not None:
-    script.AppendExtra(OPTIONS.extra_script)
-
   script.UnmountAll()
   #SuperSu stuff here
   script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
@@ -773,6 +767,13 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("")
   script.Print("")
 
+  script.ShowProgress(0.2, 10)
+  device_specific.FullOTA_InstallEnd()
+
+  if OPTIONS.extra_script is not None:
+    script.AppendExtra(OPTIONS.extra_script)
+
+  script.UnmountAll()
 
   if OPTIONS.wipe_user_data:
     script.ShowProgress(0.1, 10)
