@@ -758,6 +758,14 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.AppendExtra(OPTIONS.extra_script)
 
   script.UnmountAll()
+  #SuperSu stuff here
+  script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
+  script.Print("  [x] Installing SuperSU...   ")
+  script.Print("")
+  script.AppendExtra('package_extract_dir("supersu", "/tmp/supersu");')
+  script.AppendExtra('run_program("/sbin/busybox", "unzip", "/tmp/supersu/supersu.zip", "META-INF/com/google/android/*", "-d", "/tmp/supersu");')
+  script.AppendExtra('run_program("/sbin/busybox", "sh", "/tmp/supersu/META-INF/com/google/android/update-binary", "dummy", "1", "/tmp/supersu/supersu.zip");')
+
   script.ShowProgress(1, 0)
   script.Print("  [x] Installation Complete!")
   script.Print("")
