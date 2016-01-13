@@ -47,6 +47,9 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
       bootloader image. This option is only meaningful when -i is specified,
       because a full bootloader is always included in a full OTA if applicable.
 
+ --supersu
+      Install SuperSU.
+
   -v  (--verify)
       Remount and verify the checksums of the files written to the
       system and vendor (if used) partitions.  Incremental builds only.
@@ -148,6 +151,7 @@ OPTIONS.full_bootloader = False
 OPTIONS.backuptool = False
 OPTIONS.override_device = 'auto'
 OPTIONS.override_prop = False
+OPTIONS.supersu = False
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -755,12 +759,13 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   script.UnmountAll()
   #SuperSu stuff here
-  script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
-  script.Print("  [x] Installing SuperSU...   ")
-  script.Print("")
-  script.AppendExtra('package_extract_dir("supersu", "/tmp/supersu");')
-  script.AppendExtra('run_program("/sbin/busybox", "unzip", "/tmp/supersu/supersu.zip", "META-INF/com/google/android/*", "-d", "/tmp/supersu");')
-  script.AppendExtra('run_program("/sbin/busybox", "sh", "/tmp/supersu/META-INF/com/google/android/update-binary", "dummy", "1", "/tmp/supersu/supersu.zip");')
+  if OPTIONS.supersu:
+    script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
+    script.Print("  [x] Installing SuperSU...   ")
+    script.Print("")
+    script.AppendExtra('package_extract_dir("supersu", "/tmp/supersu");')
+    script.AppendExtra('run_program("/sbin/busybox", "unzip", "/tmp/supersu/supersu.zip", "META-INF/com/google/android/*", "-d", "/tmp/supersu");')
+    script.AppendExtra('run_program("/sbin/busybox", "sh", "/tmp/supersu/META-INF/com/google/android/update-binary", "dummy", "1", "/tmp/supersu/supersu.zip");')
 
   script.ShowProgress(1, 0)
   script.Print("  [x] Installation Complete!")
@@ -1675,6 +1680,8 @@ def main(argv):
       OPTIONS.override_device = a
     elif o in ("--override_prop",):
       OPTIONS.override_prop = bool(a.lower() == 'true')
+    elif o == "--supersu":
+      OPTIONS.supersu = True
     else:
       return False
     return True
@@ -1702,7 +1709,8 @@ def main(argv):
                                  "stash_threshold=",
                                  "backup=",
                                  "override_device=",
-                                 "override_prop="
+                                 "override_prop=",
+                                 "supersu"
                              ], extra_option_handler=option_handler)
 
   if len(args) != 2:
