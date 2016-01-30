@@ -245,8 +245,11 @@ if __name__ == '__main__':
         if '/' in change:
             (change, patchset) = change.split('/')
         change = int(change)
+        review = next((x for x in reviews if x['number'] == change), None)
+        if review is None:
+            print('Change %d not found, skipping' % change)
+            continue
 
-        review = [x for x in reviews if x['number'] == change][0]
         mergables.append({
             'subject': review['subject'],
             'project': review['project'],
