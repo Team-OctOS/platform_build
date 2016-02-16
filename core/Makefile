@@ -1230,7 +1230,7 @@ endef
 $(BUILT_SYSTEMIMAGE): $(FULL_SYSTEMIMAGE_DEPS) $(INSTALLED_FILES_FILE)
 	$(call build-systemimage-target,$@)
 
-ifndef I_WANT_A_QUAIL_STAR
+ifdef I_WANT_A_QUAIL_STAR
 $(BUILT_SYSTEMIMAGE): checkapi
 $(BUILT_SYSTEMIMAGE): checkapi-cm
 endif
