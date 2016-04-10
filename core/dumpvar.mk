@@ -84,6 +84,9 @@ endif
 ifneq ($(strip $(KERNEL_TOOLCHAIN)),)
 $(info   KERNEL_TOOLCHAIN=$(KERNEL_TOOLCHAIN))
 endif
+ifneq ($(strip $(TARGET_KERNEL_CONFIG_CUSTOM)),)
+$(info   TARGET_KERNEL_CONFIG_CUSTOM=$(TARGET_KERNEL_CONFIG_CUSTOM))
+endif
 $(info   HOST_ARCH=$(HOST_ARCH))
 $(info   HOST_OS=$(HOST_OS))
 $(info   HOST_OS_EXTRA=$(HOST_OS_EXTRA))
