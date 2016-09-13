@@ -293,7 +293,7 @@ installclean: dataclean
 objclean: FILES := $(objclean_files)
 objclean:
 	$(hide) rm -rf $(FILES)
-	@echo "Deleted images and staging directories."
+	@echo -e ${CL_GRN}"Deleted images and staging directories."${CL_RST}
 
 ifeq "$(force_installclean)" "true"
   $(info *** Forcing "make installclean"...)
