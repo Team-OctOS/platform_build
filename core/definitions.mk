@@ -1309,7 +1309,7 @@ endef
 ###########################################################
 
 define transform-host-cpp-to-o
-@echo -e ${CL_YLW}"host C++:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) C++:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
 @mkdir -p $(dir $@)
 $(hide) $(RELATIVE_PWD) $(PRIVATE_CXX) \
 	$(addprefix -I , $(PRIVATE_C_INCLUDES)) \
@@ -1360,12 +1360,12 @@ $(hide) $(RELATIVE_PWD) $(PRIVATE_CC) \
 endef
 
 define transform-host-c-to-o-no-deps
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) "${CL_YLW}"C:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) C:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
 $(call transform-host-c-or-s-to-o-no-deps, $(PRIVATE_CFLAGS) $(PRIVATE_CONLYFLAGS) $(PRIVATE_DEBUG_CFLAGS))
 endef
 
 define transform-host-s-to-o-no-deps
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) "${CL_YLW}"asm:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) asm:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
 $(call transform-host-c-or-s-to-o-no-deps, $(PRIVATE_ASFLAGS))
 endef
 
@@ -1384,7 +1384,7 @@ endef
 ###########################################################
 
 define transform-host-m-to-o-no-deps
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) "${CL_YLW}"ObjC:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) ObjC:"${CL_RST}" $(PRIVATE_MODULE) <= $<"
 $(call transform-host-c-or-s-to-o-no-deps, $(PRIVATE_CFLAGS) $(PRIVATE_DEBUG_CFLAGS))
 endef
 
@@ -1524,7 +1524,7 @@ endef
 # Explicitly delete the archive first so that ar doesn't
 # try to add to an existing archive.
 define transform-o-to-static-lib
-@echo -e ${CL_GRN}"target StaticLib:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) StaticLib:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 @mkdir -p $(dir $@)
 @rm -f $@
 $(extract-and-include-target-whole-static-libs)
@@ -1572,7 +1572,7 @@ endef
 # Explicitly delete the archive first so that ar doesn't
 # try to add to an existing archive.
 define transform-host-o-to-static-lib
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) ${CL_YLW}"StaticLib:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) StaticLib:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 @mkdir -p $(dir $@)
 @rm -f $@
 $(extract-and-include-host-whole-static-libs)
@@ -1616,13 +1616,13 @@ endef
 endif
 
 define transform-host-o-to-shared-lib
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) ${CL_YLW}"SharedLib:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) SharedLib:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 @mkdir -p $(dir $@)
 $(transform-host-o-to-shared-lib-inner)
 endef
 
 define transform-host-o-to-package
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) ${CL_YLW}"Package:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) Package:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 @mkdir -p $(dir $@)
 $(transform-host-o-to-shared-lib-inner)
 endef
@@ -1818,7 +1818,7 @@ endef
 endif
 
 define transform-host-o-to-executable
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) ${CL_YLW}"Executable:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) Executable:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 @mkdir -p $(dir $@)
 $(transform-host-o-to-executable-inner)
 endef
@@ -2085,7 +2085,7 @@ $(if $(PRIVATE_EXTRA_JAR_ARGS),$(call add-java-resources-to,$@))
 endef
 
 define transform-java-to-classes.jar
-@echo -e ${CL_GRN}"target Java:"${CL_RST}" $(PRIVATE_MODULE) ($(PRIVATE_CLASS_INTERMEDIATES_DIR))"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) Java:"${CL_RST}" $(PRIVATE_MODULE) ($(PRIVATE_CLASS_INTERMEDIATES_DIR))"
 $(call compile-java,$(TARGET_JAVAC),$(PRIVATE_BOOTCLASSPATH))
 endef
 
@@ -2536,7 +2536,7 @@ endef
 # Note: we intentionally don't clean PRIVATE_CLASS_INTERMEDIATES_DIR
 # in transform-java-to-classes for the sake of vm-tests.
 define transform-host-java-to-package
-@echo -e "$($(PRIVATE_PREFIX)DISPLAY) ${CL_YLW}"Java:"${CL_RST}" $(PRIVATE_MODULE) ($(PRIVATE_CLASS_INTERMEDIATES_DIR))"
+@echo -e ${CL_YLW}"$($(PRIVATE_PREFIX)DISPLAY) Java:"${CL_RST}" $(PRIVATE_MODULE) ($(PRIVATE_CLASS_INTERMEDIATES_DIR))"
 $(call compile-java,$(HOST_JAVAC),$(PRIVATE_BOOTCLASSPATH))
 endef
 
@@ -2637,19 +2637,19 @@ endef
 
 # Copy a prebuilt file to a target location.
 define transform-prebuilt-to-target
-@echo -e ${CL_CYN}"$(if $(PRIVATE_IS_HOST_MODULE),host,target) Prebuilt:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo -e "$(if $(PRIVATE_IS_HOST_MODULE),host,target) "${CL_CYN}"Prebuilt:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 $(copy-file-to-target)
 endef
 
 # Copy a prebuilt file to a target location, using zipalign on it.
 define transform-prebuilt-to-target-with-zipalign
-@echo -e ${CL_CYN}"$(if $(PRIVATE_IS_HOST_MODULE),host,target) Prebuilt APK:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo "$(if $(PRIVATE_IS_HOST_MODULE),host,target) "${CL_CYN}"Prebuilt APK:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 $(copy-file-to-target-with-zipalign)
 endef
 
 # Copy a prebuilt file to a target location, stripping "# comment" comments.
 define transform-prebuilt-to-target-strip-comments
-@echo -e ${CL_CYN}"$(if $(PRIVATE_IS_HOST_MODULE),host,target) Prebuilt:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
+@echo "$(if $(PRIVATE_IS_HOST_MODULE),host,target) "${CL_CYN}"Prebuilt:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 $(copy-file-to-target-strip-comments)
 endef
 
