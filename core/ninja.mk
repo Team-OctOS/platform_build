@@ -1,4 +1,4 @@
-NINJA ?= $(shell which ninja)
+NINJA := $(shell which ninja)
 ifeq ($(NINJA),)
   NINJA := prebuilts/ninja/$(HOST_PREBUILT_TAG)/ninja
 endif
