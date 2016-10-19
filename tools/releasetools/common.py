@@ -1390,7 +1390,7 @@ class BlockDifference(object):
     if not self.src:
       # write the output unconditionally
       script.Print(" ")
-      script.Print("Flashing Dirty Unicorns System files...")
+      script.Print("Flashing OctOS System files...")
     if progress:
       script.ShowProgress(progress, 0)
     self._WriteUpdate(script, output_zip)
@@ -1515,7 +1515,7 @@ class BlockDifference(object):
                          self.device, ranges_str,
                          self._HashZeroBlocks(self.tgt.extended.size())))
       script.Print(" ")
-      script.Print("Verified Dirty Unicorns System files...")
+      script.Print("Verified OctOS System files...")
       script.AppendExtra(
           'else\n'
           '  abort("E%d: %s partition has unexpected non-zero contents after '
@@ -1523,7 +1523,7 @@ class BlockDifference(object):
           'endif;' % (code, partition))
     else:
       script.Print(" ")
-      script.Print("Verified Dirty Unicorns System files...")
+      script.Print("Verified OctOS System files...")
 
     if partition == "system":
       code = ErrorCode.SYSTEM_UNEXPECTED_CONTENTS
