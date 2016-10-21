@@ -1884,21 +1884,11 @@ ifneq ($(TARGET_UNIFIED_DEVICE),)
     $(INTERNAL_OTA_PACKAGE_TARGET): override_prop := --override_prop=true
 endif
 
-ifneq ($(INSTALL_SUPERSU),false)
-    $(INTERNAL_OTA_PACKAGE_TARGET): flash_supersu := --supersu
-endif
-
-ifneq ($(INSTALL_SUPERUSER),false)
-    $(INTERNAL_OTA_PACKAGE_TARGET): flash_superuser := --superuser
-endif
-
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo -e ${CL_PFX}"Package OTA:"${CL_RST}" $@"
 	$(hide) PATH=$(foreach p,$(INTERNAL_USERIMAGES_BINARY_PATHS),$(p):)$$PATH MKBOOTIMG=$(MKBOOTIMG) \
 	   ./build/tools/releasetools/ota_from_target_files -v \
 	   --block \
-	   $(flash_supersu) \
-	   $(flash_superuser) \
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
 	   --override_device=$(override_device) $(override_prop) \

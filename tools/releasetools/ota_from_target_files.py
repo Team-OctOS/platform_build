@@ -46,12 +46,6 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
       Similar to --full_radio. When generating an incremental OTA, always
       include a full copy of bootloader image.
 
- --supersu
-      Install SuperSU.
-
- --superuser
-      Install Superuser.
-
   -v  (--verify)
       Remount and verify the checksums of the files written to the
       system and vendor (if used) partitions.  Incremental builds only.
@@ -175,8 +169,6 @@ OPTIONS.cache_size = None
 OPTIONS.stash_threshold = 0.8
 OPTIONS.gen_verify = False
 OPTIONS.log_diff = None
-OPTIONS.supersu = False
-OPTIONS.superuser = False
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -753,24 +745,12 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   script.UnmountAll()
   #SuperSu stuff here
-  if OPTIONS.supersu:
-    script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
-    script.Print("8  [x] Installing SuperSU...   ")
-    script.Print("")
-    script.AppendExtra('package_extract_dir("supersu", "/tmp/supersu");')
-    script.AppendExtra('run_program("/sbin/busybox", "unzip", "/tmp/supersu/supersu.zip", "META-INF/com/google/android/*", "-d", "/tmp/supersu");')
-    script.AppendExtra('run_program("/sbin/busybox", "sh", "/tmp/supersu/META-INF/com/google/android/update-binary", "dummy", "1", "/tmp/supersu/supersu.zip");')
-
-  #Superuser stuff here
-  if OPTIONS.superuser:
-    script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
-    script.Print("8  [x] Installing Superuser HideSu...   ")
-    script.Print("")
-    script.AppendExtra('package_extract_dir("superuser", "/tmp/superuser");')
-    script.AppendExtra('run_program("/sbin/busybox", "unzip", "/tmp/superuser/superuser.zip", "-d", "/tmp/superuser");')
-    script.AppendExtra('run_program("/sbin/busybox", "chmod", "0755", "/tmp/superuser/install.sh");')
-    script.AppendExtra('run_program("/sbin/busybox", "chown", "0:0", "/tmp/superuser/install.sh");')
-    script.AppendExtra('run_program("/sbin/busybox", "sh", "/tmp/superuser/install.sh");')
+  script.AppendExtra('run_program("/sbin/busybox", "sleep", "5");')
+  script.Print("8  [x] Installing SuperSU...   ")
+  script.Print("")
+  script.AppendExtra('package_extract_dir("supersu", "/tmp/supersu");')
+  script.AppendExtra('run_program("/sbin/busybox", "unzip", "/tmp/supersu/supersu.zip", "META-INF/com/google/android/*", "-d", "/tmp/supersu");')
+  script.AppendExtra('run_program("/sbin/busybox", "sh", "/tmp/supersu/META-INF/com/google/android/update-binary", "dummy", "1", "/tmp/supersu/supersu.zip");')
 
   if OPTIONS.wipe_user_data:
     script.ShowProgress(0.1, 10)
@@ -1985,10 +1965,6 @@ def main(argv):
       OPTIONS.log_diff = a
     elif o in ("--override_device"):
       OPTIONS.override_device = a
-    elif o == "--supersu":
-      OPTIONS.supersu = True
-    elif o == "--superuser":
-      OPTIONS.superuser = True
     else:
       return False
     return True
@@ -2020,8 +1996,6 @@ def main(argv):
                                  "log_diff=",
                                  "override_device=",
                                  "override_prop=",
-                                 "supersu",
-                                 "superuser"
                              ], extra_option_handler=option_handler)
 
   if len(args) != 2:
