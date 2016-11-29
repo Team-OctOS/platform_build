@@ -30,6 +30,9 @@ else
   FILE_NAME_TAG := $(BUILD_NUMBER)
 endif
 
+# Include the changelog
+TO_RUN_CHANGELOG := $(shell ./vendor/to/tools/to_changelog)
+
 # -----------------------------------------------------------------
 # Define rules to copy PRODUCT_COPY_FILES defined by the product.
 # PRODUCT_COPY_FILES contains words like <source file>:<dest file>[:<owner>].
@@ -2252,6 +2255,7 @@ TO_TARGET_PACKAGE := $(PRODUCT_OUT)/$(TO_VERSION).zip
 .PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
+	$(hide) ./vendor/to/tools/to_copy_changelog
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(TO_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(TO_TARGET_PACKAGE) > $(TO_TARGET_PACKAGE).md5sum
 

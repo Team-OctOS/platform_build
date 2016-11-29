@@ -829,6 +829,12 @@ endif;
   common.ZipWriteStr(output_zip, "META-INF/org/lineageos/releasekey",
                      ""+input_zip.read("META/releasekey.txt"))
 
+  try:
+    common.ZipWriteStr(output_zip, "changelog.txt",
+                       ""+input_zip.read("SYSTEM/addon.d/changelog.txt"))
+  except Exception:
+    pass
+
 def WritePolicyConfig(file_name, output_zip):
   common.ZipWrite(output_zip, file_name, os.path.basename(file_name))
 
