@@ -30,6 +30,9 @@ else
   FILE_NAME_TAG := $(BUILD_NUMBER)
 endif
 
+# Include the changelog
+TO_RUN_CHANGELOG := $(shell ./vendor/to/tools/to_changelog)
+
 # -----------------------------------------------------------------
 # Define rules to copy PRODUCT_COPY_FILES defined by the product.
 # PRODUCT_COPY_FILES contains words like <source file>:<dest file>[:<owner>].
@@ -315,7 +318,6 @@ $(INSTALLED_BUILD_PROP_TARGET): $(intermediate_system_build_prop) $(INSTALLED_RE
 ifdef INSTALLED_RECOVERYIMAGE_TARGET
 	$(hide) echo ro.expect.recovery_id=`cat $(RECOVERYIMAGE_ID_FILE)` >> $@
 endif
-
 # -----------------------------------------------------------------
 # vendor build.prop
 #
@@ -2012,8 +2014,10 @@ TO_TARGET_PACKAGE := $(PRODUCT_OUT)/$(TO_VERSION).zip
 .PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
+
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 endif
+	$(hide) ./vendor/to/tools/to_copy_changelog
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(TO_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(TO_TARGET_PACKAGE) > $(TO_TARGET_PACKAGE).md5sum
 
