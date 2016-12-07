@@ -1402,7 +1402,7 @@ $(export_includes): PRIVATE_EXPORT_C_INCLUDE_DIRS := $(my_export_c_include_dirs)
 # By adding $(my_generated_sources) it makes sure the headers get generated
 # before any dependent source files get compiled.
 $(export_includes) : $(my_generated_sources) $(export_include_deps)
-	@echo -e ${CL_CYN}Export includes file:${CL_RST} $< -- $@
+	@echo Export includes file: $< -- $@
 	$(hide) mkdir -p $(dir $@) && rm -f $@.tmp
 ifdef my_export_c_include_dirs
 	$(hide) for d in $(PRIVATE_EXPORT_C_INCLUDE_DIRS); do \

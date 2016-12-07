@@ -2086,11 +2086,8 @@ def main(argv):
                                  "stash_threshold=",
                                  "gen_verify",
                                  "log_diff=",
-                                 "backup=",
-                                 "override_device=",
-                                 "override_prop=",
-								 "payload_signer=",
-								 "payload_signer_args=",
+                                 "payload_signer=",
+                                 "payload_signer_args=",
                              ], extra_option_handler=option_handler)
 
   if len(args) != 2:

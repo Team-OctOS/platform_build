@@ -3322,8 +3322,8 @@ table.jd-tagtable th {
   display: none;
 }
 
-/* offset the <a name=""> tags to account for sticky nav */
-body.reference a[name]:not(.nav-start-marker) {
+/* offset the empty <a name=""> tags to account for sticky nav */
+body.reference a[name]:not(.nav-start-marker):empty {
   visibility: hidden;
   display: block;
   position: relative;
@@ -3335,6 +3335,9 @@ body.reference a[name]:not(.nav-start-marker) {
   position: absolute;
 }
 
+.nav-start-marker {
+  position: absolute;
+}
 
 /* Quicknav */
 .btn-quicknav {
@@ -7553,6 +7556,284 @@ body.no-crumbs .dac-header-crumbs {
 
 .dac-nav-secondary .dac-nav-item {
   margin-bottom: 0;
+}
+
+.dac-nav-head {
+  display: block;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: .24px;
+  line-height: 32px;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.dac-nav-dimmer {
+  background: #000;
+  display: block;
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  visibility: hidden;
+  width: 100%;
+  z-index: 60;
+}
+
+.dac-nav-animating .dac-nav-dimmer {
+  -webkit-transition: visibility 0s linear .3s, opacity .3s linear;
+  transition: visibility 0s linear .3s, opacity .3s linear;
+}
+
+.dac-nav-open .dac-nav-dimmer {
+  opacity: .8;
+  -webkit-transition-delay: 0s;
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+@media (min-width: 980px) {
+  .dac-nav-dimmer {
+    display: none;
+  }
+}
+
+.dac-nav-hamburger {
+  display: inline-block;
+  float: left;
+  height: 15px;
+  padding: 22px 20px;
+  width: 18px;
+}
+
+@media (max-width: 719px) {
+  .dac-nav-hamburger {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    left: 0;
+    padding-bottom: 27px;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.dac-nav-hamburger-top, .dac-nav-hamburger-mid, .dac-nav-hamburger-bot {
+  background: rgba(0, 0, 0, 0.4);
+  display: block;
+  height: 2px;
+  margin: 3px 0 0;
+  opacity: .5;
+  width: 100%;
+}
+
+.dac-studio .dac-nav-hamburger-top,
+.dac-studio .dac-nav-hamburger-mid,
+.dac-studio .dac-nav-hamburger-bot {
+  background: rgba(256, 256, 256, 0.4);
+}
+
+.dac-nav-animating .dac-nav-hamburger-top, .dac-nav-animating .dac-nav-hamburger-mid, .dac-nav-animating .dac-nav-hamburger-bot {
+  -webkit-transition: opacity .3s;
+  transition: opacity .3s;
+}
+
+@media (max-width: 719px) {
+  .dac-nav-hamburger-top, .dac-nav-hamburger-mid, .dac-nav-hamburger-bot {
+    background: #fff;
+    opacity: 1;
+  }
+}
+
+.dac-nav-open .dac-nav-hamburger-top,
+  .dac-nav-open .dac-nav-hamburger-mid,
+  .dac-nav-open .dac-nav-hamburger-bot {
+  opacity: 1;
+}
+
+.dac-search-mode .dac-nav-hamburger {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transition: visibility 0s linear 200ms, opacity 200ms linear;
+  transition: visibility 0s linear 200ms, opacity 200ms linear;
+}
+
+.dac-nav-link {
+  color: #444;
+  display: block;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: .24px;
+  padding: 5px 20px;
+  -webkit-transition: background-color 0.35s cubic-bezier(0.35, 0, 0.25, 1);
+  transition: background-color 0.35s cubic-bezier(0.35, 0, 0.25, 1);
+}
+
+.dac-nav-link:hover, .dac-nav-link:focus {
+  color: rgba(68, 68, 68, 0.7);
+}
+
+.dac-nav-link:focus {
+  background: rgba(63, 81, 181, 0.1);
+  outline: 0;
+}
+
+.dac-nav-secondary .dac-nav-link {
+  font-size: 12px;
+  font-weight: 400;
+  padding-left: 40px;
+  text-transform: none;
+}
+
+.dac-nav-link.selected {
+  background: rgba(63, 81, 181, 0.1);
+  color: #039bef;
+  position: relative;
+}
+
+.dac-nav-link-forward {
+  background: #546E7A;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  line-height: 34px;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.dac-nav-link-forward > .dac-nav-forward {
+  opacity: .7;
+  vertical-align: -3px;
+}
+
+.dac-nav-sub {
+  bottom: 0;
+  left: 0;
+  position: absolute !important;
+  top: 65px !important;
+  right: 0;
+  z-index: 1;
+}
+
+#body-content {
+  padding-top: 64px;
+}
+
+.dac-nav-animating #body-content {
+  -webkit-transition: padding .3s;
+  transition: padding .3s;
+}
+
+@media (min-width: 980px) {
+  .dac-nav-open #body-content {
+    padding-left: 250px;
+  }
+
+  /* Do not show nav toggle on large screens (when no subnav) */
+  body.no-subnav .dac-nav-toggle {
+    display:none;
+  }
+  body.no-subnav .dac-header-logo {
+    padding-left:20px;
+  }
+  /* ...If the page is also full-width, then don't show left nav at all */
+  body.no-subnav.full-width .dac-nav {
+    display: none;
+  }
+  body.no-subnav.full-width #body-content {
+    padding-left:0;
+  }
+}
+
+.dac-nav-open {
+  overflow: hidden;
+}
+
+@media (min-width: 980px) {
+  .dac-nav-open {
+    overflow: visible;
+  }
+}
+
+#devdoc-nav {
+  height: 100%;
+}
+
+.data-reference-resources-wrapper {
+  display: none;
+}
+
+.dac-reference-nav {
+  height: calc(100% - 36px);
+  overflow: hidden;
+  position: relative;
+}
+
+.dac-reference-nav ul,
+  .dac-reference-nav li {
+  margin: 0;
+  list-style-type: none;
+}
+
+.dac-reference-nav-list {
+  bottom: 0;
+  overflow: hidden;
+  overflow-y: scroll;
+  left: 0;
+  padding: 10px;
+  padding-left: 20px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  scrollbar-face-color: #9da4a7;
+  scrollbar-track-color: #c4cdd1;
+}
+
+.dac-reference-nav-list::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.dac-reference-nav-list::-webkit-scrollbar-thumb {
+  background: #9da4a7;
+}
+
+.dac-reference-nav-list::-webkit-scrollbar-track {
+  background: #c4cdd1;
+}
+
+.dac-reference-nav-resources {
+  display: none;
+  padding: 0 0 0 13px;
+}
+
+.dac-reference-nav-resource,
+.dac-reference-nav-toggle {
+  color: #505050;
+  cursor: pointer;
+  display: block;
+  font-size: 12px;
+  line-height: 1;
+  overflow: hidden;
+  margin: 0;
+  padding: 3px 0;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dac-reference-nav-toggle {
+  margin-left: -12px;
+  padding-left: 12px;
+}
+
+=======
 }
 
 .dac-nav-head {
