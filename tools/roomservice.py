@@ -37,7 +37,7 @@ except ImportError:
 # set this to the default remote to use in repo
 default_rem = "to"
 # set this to the default revision to use (branch/tag name)
-default_rev = "aosp-7.1"
+default_rev = "aosp-7.1.1"
 # set defualt clone-depth
 default_clone_depth = ""
 # set this to the remote that you use for projects from your team repos
