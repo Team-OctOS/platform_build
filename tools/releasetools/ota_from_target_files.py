@@ -685,7 +685,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("8  .cldoododol'   .:doododooo,  8");
   script.Print("8                               8");
   script.Print("88888888888*TEAM*OCTOS*8888888888");
-  script.Print("8          Android 7.1          8");
+  script.Print("8         Android 7.1.1         8");
   script.Print("888888888888888888888888888888888");
 
   script.AppendExtra("ifelse(is_mounted(\"/system\"), unmount(\"/system\"));")
