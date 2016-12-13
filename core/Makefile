@@ -2234,8 +2234,20 @@ otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(TO_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(TO_TARGET_PACKAGE) > $(TO_TARGET_PACKAGE).md5sum
-	@echo "Package Complete: $(TO_TARGET_PACKAGE)"
 
+	echo -e ${CL_CYN}"▄▄▄█████▓▓█████ ▄▄▄       ███▄ ▄███▓    ▒█████   ▄████▄  ▄▄▄█████▓ ▒█████    ██████"${CL_RST}
+	echo -e ${CL_CYN}"▓  ██▒ ▓▒▓█   ▀▒████▄    ▓██▒▀█▀ ██▒   ▒██▒  ██▒▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▒██    ▒"${CL_RST}
+	echo -e ${CL_CYN}"▒ ▓██░ ▒░▒███  ▒██  ▀█▄  ▓██    ▓██░   ▒██░  ██▒▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒░ ▓██▄ "${CL_RST}
+	echo -e ${CL_CYN}"░ ▓██▓ ░ ▒▓█  ▄░██▄▄▄▄██ ▒██    ▒██    ▒██   ██░▒▓▓▄ ▄██▒░ ▓██▓ ░ ▒██   ██░  ▒   ██▒"${CL_RST}
+	echo -e ${CL_CYN}"  ▒██▒ ░ ░▒████▒▓█   ▓██▒▒██▒   ░██▒   ░ ████▓▒░▒ ▓███▀ ░  ▒██▒ ░ ░ ████▓▒░▒██████▒▒"${CL_RST}
+	echo -e ${CL_CYN}"  ▒ ░░   ░░ ▒░ ░▒▒   ▓▒█░░ ▒░   ░  ░   ░ ▒░▒░▒░ ░ ░▒ ▒  ░  ▒ ░░   ░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░"${CL_RST}
+	echo -e ${CL_CYN}"    ░     ░ ░  ░ ▒   ▒▒ ░░  ░      ░     ░ ▒ ▒░   ░  ▒       ░      ░ ▒ ▒░ ░ ░▒  ░ ░"${CL_RST}
+	echo -e ${CL_CYN}"  ░         ░    ░   ▒   ░      ░      ░ ░ ░ ▒  ░          ░      ░ ░ ░ ▒  ░  ░  ░"${CL_RST}
+	echo -e ${CL_CYN}"            ░  ░     ░  ░       ░          ░ ░  ░ ░                   ░ ░        ░"${CL_RST}
+	echo -e ${CL_CYN}"                                                ░"${CL_RST}
+	@echo -e ${CL_CYN}"======================================================================================="${CL_CYN}
+	@echo -e ${CL_CYN}"$(TO_TARGET_PACKAGE)"${CL_CYN}
+	@echo -e ${CL_CYN}"======================================================================================="${CL_CYN}
 endif    # build_ota_package
 # -----------------------------------------------------------------
 # The factory package
