@@ -555,11 +555,11 @@ function print_lunch_menu()
     local choice
     local community
     local team
-    if [ -f vendor/to/vendorsetup.sh ] ; then
-        team=`cat vendor/to/vendorsetup.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    if [ -f vendor/to/product/vendorsetup.sh ] ; then
+        team=`cat vendor/to/product/vendorsetup.sh | head -1 | sed s/"add_lunch_combo "/""/`
     fi
-    if [ -f vendor/to/vendorsetup_community.sh ] ; then
-        community=`cat vendor/to/vendorsetup_community.sh | head -1 | sed s/"add_lunch_combo "/""/`
+    if [ -f vendor/to/product/vendorsetup_community.sh ] ; then
+        community=`cat vendor/to/product/vendorsetup_community.sh | head -1 | sed s/"add_lunch_combo "/""/`
     fi
 
     for choice in ${LUNCH_MENU_CHOICES[@]}
@@ -1703,7 +1703,7 @@ if ! __detect_shell > /dev/null; then
 fi
 
 # Execute the contents of any vendorsetup.sh files for Team OctOs
-for f in `/bin/ls -r vendor/to/vendorsetup*.sh 2> /dev/null`
+for f in `/bin/ls -r vendor/to/product/vendorsetup*.sh 2> /dev/null`
 
 do
     . $f
