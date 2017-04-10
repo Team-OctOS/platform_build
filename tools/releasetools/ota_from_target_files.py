@@ -653,28 +653,37 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("Target: %s" % CalculateFingerprint(
       oem_props, oem_dict, OPTIONS.info_dict))
 
-  script.Print("                                 ");
-  script.Print("                                 ");
-  script.Print("888888888888888888888888888888888");
-  script.Print("8                               8");
-  script.Print("8         .;codddddol:,.        8");
-  script.Print("8      :ONM0l,.   ..:kNMXd,     8");
-  script.Print("8   .dNMMO'           .lNMMK:   8");
-  script.Print("8  'XMMMx       ..      .NMMMk  8");
-  script.Print("8 .XMMMX     :KNKXXd.    lMMMMc 8");
-  script.Print("8 :MMMMx    ;MO  :0Mx    .MMMMO 8");
-  script.Print("8 :MMMMx    .XXl,;OWc    .MMMMk 8");
-  script.Print("8  XMMMK      :dkxl.     cMMMW, 8");
-  script.Print("8  .0MMMo               'XMMN:  8");
-  script.Print("8    :KMMx'           'dWMNd.   8");
-  script.Print("8   .  'oONW0:     .dXW0d;  .   8");
-  script.Print("8 .0MWx:;;:KMMo   'XMWl;;;lXMN, 8");
-  script.Print("8 .XMMMMMMMMMMk   :WMMMMMMMMMW; 8");
-  script.Print("8  .cldoododol'   .:doododooo,  8");
-  script.Print("8                               8");
-  script.Print("88888888888*TEAM*OCTOS*8888888888");
-  script.Print("8         Android 7.1.1         8");
-  script.Print("888888888888888888888888888888888");
+  script.Print("                                          ");
+  script.Print("                                          ");
+  script.Print("*--==--==--==--==-==-==--==--==--==--==--*");
+  script.Print("*              TEAM OCTOS                *");
+  script.Print("*--==--==--==--==-==-==--==--==--==--==--*");
+  script.Print("                                          ");
+  script.Print("            .::///++++///::-.             ");
+  script.Print("        ':/+++++/:-::::/+++////-'         ");
+  script.Print("      -/+++/-:::////////::--/++://.       ");
+  script.Print("    -+/o+////:---:::/::---://--+o://.     ");
+  script.Print("   //+s+/:---:++/oso+////////++/+s+:+:    ");
+  script.Print(" '+/ss/---:++:'-+/-----------------:/+/-  ");
+  script.Print(" +/s+---/o/' '+/---------------+o://+:-:+'");
+  script.Print(":/s/--:os::-:+/:---::::--------++/syo//-:o");
+  script.Print(".s:--/s/::-..-:-:/:::/+//:-----/o+:oo/---o");
+  script.Print(":/--:ss-''    +:.     '+:---------:oyy+-:/");
+  script.Print("o---+o.-s:  -:' '      .+-----------::::s'");
+  script.Print("+:--:: .-' :. /s/      -/-::----------:oo ");
+  script.Print("'+:--:    -- .yy+'    '+-:/---------:/+// ");
+  script.Print("  o/-::--:o   '      .+/+/------://o/:-o' ");
+  script.Print(" +:---:---+        '/o:..---/s+o+-o/--+.  ");
+  script.Print("-/---//---:/-'''.://o.   .:++//-/+:-:+.   ");
+  script.Print("/:---o---/--::////+s+//++++/:-/+:--//'    ");
+  script.Print("-+---o---+----o/.' ::::::::/+/:--//.      ");
+  script.Print(" :+::+/--/+:--:/++///+/++/:---//:.        ");
+  script.Print("   .--:+:-:+///::-------::///:.           ");
+  script.Print("       '::///-'.--:::::--.'               ");
+  script.Print("                                          ");
+  script.Print("*--==--==--==--==-==-==--==--==--==--==--*");
+  script.Print("*            Android  7.1.1              *");
+  script.Print("*--==--==--==--==-==-==--==--==--==--==--*");
 
   script.AppendExtra("ifelse(is_mounted(\"/system\"), unmount(\"/system\"));")
   device_specific.FullOTA_InstallBegin()
